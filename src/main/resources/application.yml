@@ -1,0 +1,67 @@
+server:
+  port: 1314
+  session:
+    timeout: 10
+  tomcat:
+    uri-encoding: utf-8
+  context-path: /spring-boot-template
+
+spring:
+  datasource:
+    name: testdb
+    url: jdbc:mysql://127.0.0.1:3306/test
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 获取连接最大等待时间，ms
+    max-wait: 10000
+    # 初始化连接
+    initial-size: 5
+    # 最大连接数量
+    max-active: 50
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，ms
+    time-between-eviction-runs-millis: 60000
+    # 配置一个连接在池中最小生存的时间，ms
+    min-evictable-idle-time-millis: 30000
+    validation-query: select 1 from dual
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    pool-prepared-statements: true
+    max-pool-prepared-statement-per-connection-size: 20
+    filters: stat,wall,log4j2
+
+  redis:
+    # 数据库索引，默认为0
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: admin
+    # 连接超时时间
+    timeout: 0
+    pool:
+      # 连接池最大连接数，负值表示没有限制  `
+      max-active: 8
+      # 最大阻塞时间，负值表示没有限制
+      max-wait: -1
+      # 最大空闲连接
+      max-idle: 8
+      # 最小空闲连接
+      min-idle: 0
+
+  devtools:
+    restart:
+      # 设置重启目录
+      additional-paths: src/main/java
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  config-location: classpath:config/mybatis-config.xml
+
+logging:
+  config: classpath:config/log4j2.xml
+
+druid:
+  servlet:
+    username: admin
+    password: admin123
