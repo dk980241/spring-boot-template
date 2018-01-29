@@ -6,7 +6,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 
 import java.util.Arrays;
 
@@ -17,7 +16,7 @@ import java.util.Arrays;
  * @date 2018/1/25 15:29
  */
 @SpringBootApplication
-@MapperScan("online.yuyanjia.template.mobile.mapper")
+@MapperScan(basePackages = "online.yuyanjia.template.mobile.mapper")
 public class Application implements CommandLineRunner {
     private static Logger LOGGER = LogManager.getLogger(Application.class);
 

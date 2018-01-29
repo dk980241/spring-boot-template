@@ -65,3 +65,8 @@ druid:
   servlet:
     username: admin
     password: admin123
+
+mapper:
+  mappers: online.yuyanjia.template.mobile.mapper
+  not-empty: false
+  identity: MYSQL

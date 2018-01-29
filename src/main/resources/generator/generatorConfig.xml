@@ -2,10 +2,14 @@
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
+    <!--
+        执行命令：mvn mybatis-generator:generate
+    -->
 
+    <properties resource="generator/generator.properties"/>
     <!-- 需要额外加载的依赖包  -->
-    <classPathEntry
-            location="D:\Library\mvnRepertory\mysql\mysql-connector-java\6.0.6\mysql-connector-java-6.0.6.jar"/>
+    <!--<classPathEntry-->
+    <!--location="D:\Library\mvnRepertory\mysql\mysql-connector-java\6.0.6\mysql-connector-java-6.0.6.jar"/>-->
 
     <!--
         context:生成一组对象的环境
@@ -38,20 +42,22 @@
         <property name="endingDelimiter" value="`"/>
 
         <!-- 这个插件给由MBG生成的Java模型对象增加了equals和hashCode方法 -->
-        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+        <!--<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>-->
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+        </plugin>
 
         <!--<commentGenerator>-->
         <!--&lt;!&ndash; 是否去除自动生成的注释 true：是 ： false:否 &ndash;&gt;-->
         <!--<property name="suppressAllComments" value="true"/>-->
         <!--</commentGenerator>-->
-        <commentGenerator type="online.yuyanjia.template.mobile.util.MyMybatisGenertor2">
-
-        </commentGenerator>
-
 
         <!-- 数据库链接URL、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://127.0.0.1:3306/test?serverTimezone=GMT" userId="" password=""/>
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/test?serverTimezone=GMT"
+                        userId=""
+                        password=""/>
 
         <!--类型处理器-->
         <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
@@ -67,12 +73,13 @@
         </javaTypeResolver>
 
         <!-- 生成模型的包名和位置 -->
-        <javaModelGenerator targetPackage="online.yuyanjia.template.mobile.model"
+        <javaModelGenerator targetPackage="online.yuyanjia.template.mobile.model.DO"
                             targetProject="src/main/java">
             <!--  for MyBatis3/MyBatis3Simple
                自动为每一个生成的类创建一个构造方法，构造方法包含了所有的field；而不是使用setter；
             -->
             <property name="constructorBased" value="false"/>
+            <property name="exampleMethodVisibility" value="false"/>
         </javaModelGenerator>
         <!-- 生成的映射文件包名和位置 -->
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
@@ -88,7 +95,7 @@
         <javaClientGenerator targetPackage="online.yuyanjia.template.mobile.mapper"
                              targetProject="src/main/java" type="XMLMAPPER"/>
         <!-- 要生成的那些表 -->
-        <table tableName="user">
+        <table tableName="user" domainObjectName="UserDO">
             <!-- generatedKey用于生成生成主键的方法，
                如果设置了该元素，MBG会在生成的<insert>元素中生成一条正确的<selectKey>元素，该元素可选
                column:主键的列名；
@@ -105,6 +112,7 @@
                JDBC      :相当于在生成的insert元素上添加useGeneratedKeys="true"和keyProperty属性-->
             <!--mysql 配置-->
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true"/>-->
+            <property name="rootClass" value="online.yuyanjia.template.mobile.model.base.BaseDO"/>
         </table>
     </context>
 </generatorConfiguration>
