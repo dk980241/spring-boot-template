@@ -1,5 +1,6 @@
 package online.yuyanjia.template.mobile.configuration;
 
+import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ import javax.sql.DataSource;
  * @date 2018/1/24 16:32
  */
 @Configuration
-@AutoConfigureAfter(DruidDataSourceConfig.class)
+@AutoConfigureAfter(DruidDataSourceAutoConfigure.class)
 @EnableTransactionManagement
-public class MyTransactionManager implements TransactionManagementConfigurer {
-    private static Logger LOGGER = LogManager.getLogger(MyTransactionManager.class);
+public class TransactionManager implements TransactionManagementConfigurer {
+    private static Logger LOGGER = LogManager.getLogger(TransactionManager.class);
     /**
      * 默认事务管理器
      */
@@ -39,7 +40,7 @@ public class MyTransactionManager implements TransactionManagementConfigurer {
      * @return
      */
     @Bean(name = "dataTransactionManager")
-    public PlatformTransactionManager dataTransactionManager(@Qualifier(value = "druidDataSoure") DataSource dataSource) {
+    public PlatformTransactionManager dataTransactionManager(@Qualifier(value = "dataSource") DataSource dataSource) {
         // Spring容器中，我们手工注解@Bean 将被优先加载，框架不会重新实例化其他的 PlatformTransactionManager 实现类。
         LOGGER.warn("==== 数据库事务管理器 加载 ====");
         return new DataSourceTransactionManager(dataSource);

@@ -7,5 +7,5 @@ import sys
 after_url = sys.argv[1]
 print after_url
 
-my_url = 'http://localhost:1314/spring-boot-demo/test/' + after_url
+my_url = 'http://localhost:1314/spring-boot-template/test/' + after_url
 urllib2.urlopen(url=my_url)

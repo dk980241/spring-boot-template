@@ -7,21 +7,21 @@ import lombok.*;
 import online.yuyanjia.template.mobile.model.base.BaseDO;
 
 /**
- * 用户实体类
+ * 用户信息实体
+ *
  * @author seer
- * @date 2018/1/29 16:19
+ * @date 2018/1/31 17:05
  */
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
+@ToString
 @EqualsAndHashCode
-@Table(name = "user")
-public class UserDO extends BaseDO {
+@Table(name = "user_info")
+public class UserInfoDO extends BaseDO {
     /**
      * 自增id
      */
-    @Id
     private Integer uid;
 
     /**

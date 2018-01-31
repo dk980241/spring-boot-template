@@ -1,4 +1,4 @@
-CREATE TABLE `user` (
+CREATE TABLE `user_info` (
   `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
   `token` varchar(64) DEFAULT NULL COMMENT 'token',
   `device_token` varchar(64) DEFAULT NULL COMMENT '推送设备号',

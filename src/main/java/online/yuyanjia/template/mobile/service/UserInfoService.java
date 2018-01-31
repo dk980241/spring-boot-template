@@ -6,7 +6,7 @@ package online.yuyanjia.template.mobile.service;
  * @author seer
  * @date 2018/1/29 16:15
  */
-public interface UserService {
+public interface UserInfoService {
 
     /**
      * 注册
