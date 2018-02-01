@@ -22,6 +22,7 @@ public class UserInfoDO extends BaseDO {
     /**
      * 自增id
      */
+    @Id
     private Integer uid;
 
     /**

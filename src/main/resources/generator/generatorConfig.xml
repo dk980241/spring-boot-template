@@ -109,7 +109,7 @@
                    SYBASE      :相当于selectKey的SQL为：SELECT @@IDENTITY
                    JDBC      :相当于在生成的insert元素上添加useGeneratedKeys="true"和keyProperty属性-->
             <!--mysql 配置-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true"/>-->
+            <generatedKey column="uid" sqlStatement="Mysql" identity="true"/>
             <property name="rootClass" value="online.yuyanjia.template.mobile.model.base.BaseDO"/>
         </table>
     </context>
