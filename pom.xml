@@ -40,6 +40,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+
         <!--============= extend stater ==============-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

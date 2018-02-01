@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * 用户操作实现类
@@ -42,12 +43,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     }
 
-    @Override
-    @Cacheable(value = "yuyanjia",key = "#userInfoDO.uid.toString()")
-    public UserInfoDO test(UserInfoDO userInfoDO) {
-        // userInfoDO = userInfoDOMapper.selectByPrimaryKey(userInfoDO.getUid());
 
-        LOGGER.error(userInfoDO);
+    @Override
+    public UserInfoDO findUserInfoByMobile(String mobile) {
+        UserInfoDO userInfoDO = userInfoDOMapper.selectOne(UserInfoDO.builder().mobile(mobile).build());
         return userInfoDO;
     }
 }

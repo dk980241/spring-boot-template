@@ -25,5 +25,11 @@ public interface UserInfoService {
      */
     void logout();
 
-    UserInfoDO test(UserInfoDO userInfoDO);
+    /**
+     * 根据手机号获取用户对象
+     *
+     * @param mobile
+     * @return
+     */
+    UserInfoDO findUserInfoByMobile(String mobile);
 }
