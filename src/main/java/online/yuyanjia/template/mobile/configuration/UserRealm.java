@@ -4,10 +4,7 @@ import online.yuyanjia.template.mobile.model.DO.UserInfoDO;
 import online.yuyanjia.template.mobile.service.UserInfoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -55,8 +52,8 @@ public class UserRealm extends AuthorizingRealm {
         LOGGER.debug("---- 用户登录验证 - {} ----", mobile);
         UserInfoDO userInfoDO = userInfoService.findUserInfoByMobile(mobile);
         if (null == userInfoDO) {
-            LOGGER.error(">>>> 用户登录验证，用户信息查询失败，查询手机号{} <<<<", mobile);
-            return null;
+            LOGGER.debug(">>>> 用户登录验证，用户信息查询失败，查询手机号{} <<<<", mobile);
+            throw new UnknownAccountException();
         }
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
