@@ -6,7 +6,7 @@
     <groupId>online.yuyanjia</groupId>
     <artifactId>spring-boot-template</artifactId>
     <version>0.0.1</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>spring-boot-template</name>
     <description>Spring boot template</description>
 
@@ -84,12 +84,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
+                <!--去掉tomcat-->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
                 <!--去掉spring-boot默认的log配置-->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -147,8 +158,13 @@
                         <artifactId>mapper</artifactId>
                         <version>3.5.1</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
+
+
         </plugins>
     </build>
+
+
 </project>
