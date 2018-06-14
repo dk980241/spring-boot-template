@@ -1,4 +1,4 @@
-package online.yuyanjia.template;
+package site.yuyanjia.template;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

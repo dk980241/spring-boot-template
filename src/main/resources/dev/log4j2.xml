@@ -5,11 +5,11 @@
 <configuration status="WARN" monitorInterval="30">
     <properties>
         <!--日志目录-->
-        <property name="LOG_HOME">d:/logs/spring-boot/</property>
+        <property name="LOG_HOME">./logs/</property>
         <!--日志格式-->
         <property name="LOG_FORMAT">%d{yyyy-MM-dd HH:mm:ss,SSS}[%p][%t] %c[%L] %m %n</property>
         <!--备份目录- 根据年月建立文件夹 -->
-        <property name="BACKUP_HOME">${LOG_HOME}/backup/$${date:yyyy-MM}</property>
+        <property name="BACKUP_HOME">${LOG_HOME}/backup</property>
         <!--备份频率-->
         <property name="BACK_Hz">%d{yyyy-MM-dd}</property>
     </properties>
@@ -22,7 +22,7 @@
         </console>
 
         <!--filePattern 最后的时间格式决定了备份频率：每天 %d{yyyy-MM-dd}；每分钟 %d{yyyy-MM-dd-HH-mm}-->
-        <RollingFile name="rootLog" fileName="${LOG_HOME}/oilCard.log"
+        <RollingFile name="rootLog" fileName="${LOG_HOME}/template.log"
                      filePattern="${BACKUP_HOME}/oilCard.log_${BACK_Hz}.log">
             <PatternLayout pattern="${LOG_FORMAT}"/>
             <Policies>
@@ -33,10 +33,17 @@
 
     <loggers>
         <root level="info">
+            <appender-ref ref="rootLog"/>
             <appender-ref ref="Console"/>
         </root>
-        <logger name="com.seer" level="TRACE">
-            <appender-ref ref="rootLog"/>
-        </logger>
+        <logger name="site.yuyanjia" level="all"/>
+
+
+        <!--第三方日志配置-->
+        <logger name="org.springframework" level="warn"/>
+        <logger name="org.quartz" level="warn"/>
+        <logger name="org.mybatis" level="info"/>
+        <logger name="org.apache" level="debug"/>
+        <logger name="org.apache.shiro" level="warn"/>
     </loggers>
 </configuration>

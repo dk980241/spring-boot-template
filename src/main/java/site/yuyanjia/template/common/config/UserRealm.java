@@ -1,16 +1,20 @@
-package online.yuyanjia.template.mobile.configuration;
+package site.yuyanjia.template.common.config;
 
-import online.yuyanjia.template.mobile.model.DO.UserInfoDO;
-import online.yuyanjia.template.mobile.service.UserInfoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 用户Realm
@@ -20,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class UserRealm extends AuthorizingRealm {
     private static Logger LOGGER = LogManager.getLogger(UserRealm.class);
-
-    @Autowired
-    UserInfoService userInfoService;
-
+]
     /**
      * 获取授权信息
      *
@@ -33,9 +34,16 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authenticationInfo = new SimpleAuthorizationInfo();
-        // TODO seer 2018/2/1 16:54 获取用户权限
-        authenticationInfo.addRole(null);
-        authenticationInfo.addStringPermission(null);
+        String userName = (String) principalCollection.getPrimaryPrincipal();
+        String[] roles = TmpShiro.getRoles(userName);
+
+        authenticationInfo.addRoles(Arrays.asList(roles));
+        List<String> permissionList = new ArrayList<>();
+        for (String role : roles) {
+            String[] permissions = TmpShiro.getPermissions(role);
+            permissionList.addAll(Arrays.asList(permissions));
+        }
+        authenticationInfo.addStringPermissions(permissionList);
         return authenticationInfo;
     }
 
@@ -50,18 +58,18 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String mobile = (String) authenticationToken.getPrincipal();
         LOGGER.debug("---- 用户登录验证 - {} ----", mobile);
-        UserInfoDO userInfoDO = userInfoService.findUserInfoByMobile(mobile);
-        if (null == userInfoDO) {
-            LOGGER.debug(">>>> 用户登录验证，用户信息查询失败，查询手机号{} <<<<", mobile);
-            throw new UnknownAccountException();
-        }
+        // UserInfoDO userInfoDO = userInfoService.findUserInfoByMobile(mobile);
+        // if (null == userInfoDO) {
+        //     LOGGER.debug(">>>> 用户登录验证，用户信息查询失败，查询手机号{} <<<<", mobile);
+        //     throw new UnknownAccountException();
+        // }
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfoDO.getMobile(),
-                userInfoDO.getPassword(),
+                null,
+                null,
                 getName()
         );
-        ByteSource salt = ByteSource.Util.bytes(userInfoDO.getMobile() + userInfoDO.getSalt());
+        ByteSource salt = ByteSource.Util.bytes("");
         authenticationInfo.setCredentialsSalt(salt);
         return authenticationInfo;
     }

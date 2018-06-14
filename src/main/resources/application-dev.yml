@@ -1,0 +1,80 @@
+
+logging:
+  config: classpath:dev/log4j2.xml
+spring:
+  datasource:
+    url: jdbc:mysql://10.180.29.19:3306/olicard?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: mobapp
+    password: mobapp123
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      max-wait: 3000
+      initial-size: 30
+      max-active: 100
+#      关闭空闲连接检测间隔，ms
+      time-between-eviction-runs-millis: 60000
+#      连接最小生存时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 1 from dual
+      test-while-idle: true
+#      申请连接时验证可用
+      test-on-borrow: true
+#      归还连接时验证可用
+      test-on-return: false
+      connection-properties: ruid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+#      缓存PSCache，mysql关闭，oracle开启
+      pool-prepared-statements: false
+      filters: stat,wall
+      stat-view-servlet:
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin123
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: admin
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 10
+        min-idle: 0
+  devtools:
+    restart:
+      additional-paths: src/main/java
+  activemq:
+    broker-url: tcp://10.180.29.19:61616
+    user: admin
+    password: admin
+    pool:
+      enabled: true
+  mvc:
+    static-path-pattern: /static/**
+  resources:
+    static-locations: file:D://static/
+server:
+  port: 8200
+  tomcat:
+    uri-encoding: utf-8
+  servlet:
+    context-path: /oilcoreserver
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    cache-enabled: true
+    map-underscore-to-camel-case: true
+    lazy-load-trigger-methods: equals,clone,hashCode,toString
+mapper:
+  not-empty: false
+  identity: MYSQL
+  mappers: com.sdhs.oilcoreserver.common.util.BaseMapper
+pagehelper:
+  helper-dialect: mysql
+  page-size-zero: true
+  reasonable: true
+  row-bounds-with-count: true
+  support-methods-arguments: true
+  params: count=countsql

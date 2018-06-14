@@ -1,4 +1,4 @@
-package online.yuyanjia.template;
+package site.yuyanjia.template;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;

@@ -1,4 +1,4 @@
-package online.yuyanjia.template.mobile.util;
+package site.yuyanjia.template.common.util;
 
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.common.MySqlMapper;

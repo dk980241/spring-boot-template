@@ -1,4 +1,4 @@
-package online.yuyanjia.template.mobile.controller;
+package site.yuyanjia.template.common.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

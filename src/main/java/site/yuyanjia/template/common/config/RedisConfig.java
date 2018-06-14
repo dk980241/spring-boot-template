@@ -1,4 +1,4 @@
-package online.yuyanjia.template.mobile.configuration;
+package site.yuyanjia.template.common.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
