@@ -3,7 +3,7 @@ logging:
   config: classpath:dev/log4j2.xml
 spring:
   datasource:
-    url: jdbc:mysql://10.180.29.19:3306/olicard?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+    url: jdbc:mysql://10.180.29.19:3306/gongyanyong?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: mobapp
     password: mobapp123
@@ -70,7 +70,7 @@ mybatis:
 mapper:
   not-empty: false
   identity: MYSQL
-  mappers: com.sdhs.oilcoreserver.common.util.BaseMapper
+  mappers: site.yuyanjia.template.common.util.BaseMapper
 pagehelper:
   helper-dialect: mysql
   page-size-zero: true
@@ -78,3 +78,5 @@ pagehelper:
   row-bounds-with-count: true
   support-methods-arguments: true
   params: count=countsql
+yuyanjia:
+  cross-mapping: /website/**

@@ -1,7 +1,6 @@
 package site.yuyanjia.template.common.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -12,10 +11,6 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * 用户Realm
  *
@@ -23,8 +18,6 @@ import java.util.List;
  * @date 2018/2/1 16:59
  */
 public class UserRealm extends AuthorizingRealm {
-    private static Logger LOGGER = LogManager.getLogger(UserRealm.class);
-]
     /**
      * 获取授权信息
      *
@@ -35,15 +28,15 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authenticationInfo = new SimpleAuthorizationInfo();
         String userName = (String) principalCollection.getPrimaryPrincipal();
-        String[] roles = TmpShiro.getRoles(userName);
-
-        authenticationInfo.addRoles(Arrays.asList(roles));
-        List<String> permissionList = new ArrayList<>();
-        for (String role : roles) {
-            String[] permissions = TmpShiro.getPermissions(role);
-            permissionList.addAll(Arrays.asList(permissions));
-        }
-        authenticationInfo.addStringPermissions(permissionList);
+        // String[] roles = TmpShiro.getRoles(userName);
+        //
+        // authenticationInfo.addRoles(Arrays.asList(roles));
+        // List<String> permissionList = new ArrayList<>();
+        // for (String role : roles) {
+        //     String[] permissions = TmpShiro.getPermissions(role);
+        //     permissionList.addAll(Arrays.asList(permissions));
+        // }
+        // authenticationInfo.addStringPermissions(permissionList);
         return authenticationInfo;
     }
 
@@ -57,7 +50,6 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String mobile = (String) authenticationToken.getPrincipal();
-        LOGGER.debug("---- 用户登录验证 - {} ----", mobile);
         // UserInfoDO userInfoDO = userInfoService.findUserInfoByMobile(mobile);
         // if (null == userInfoDO) {
         //     LOGGER.debug(">>>> 用户登录验证，用户信息查询失败，查询手机号{} <<<<", mobile);

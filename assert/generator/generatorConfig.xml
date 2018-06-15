@@ -6,9 +6,6 @@
         执行命令：mvn mybatis-generator:generate
     -->
 
-    <properties resource="application.properties"/>
-    <!-- 需要额外加载的依赖包  -->
-
     <!--
         context:生成一组对象的环境
         id:必选，上下文id，用于在生成错误时提示
@@ -39,9 +36,6 @@
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
-        <!-- 这个插件给由MBG生成的Java模型对象增加了equals和hashCode方法 -->
-        <!--<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>-->
-
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="site.yuyanjia.template.common.util.BaseMapper"/>
         </plugin>
@@ -52,10 +46,10 @@
         <!--</commentGenerator>-->
 
         <!-- 数据库链接URL、用户名、密码 -->
-        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
-                        connectionURL="${spring.datasource.url}"
-                        userId="${spring.datasource.username}"
-                        password="${spring.datasource.password}"/>
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://10.180.29.19:3306/gongyanyong?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+                        userId="mobapp"
+                        password="mobapp123"/>
 
         <!--类型处理器-->
         <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
@@ -71,13 +65,13 @@
         </javaTypeResolver>
 
         <!-- 生成模型的包名和位置 -->
-        <javaModelGenerator targetPackage="site.yuyanjia.template.common.model.DO"
+        <javaModelGenerator targetPackage="site.yuyanjia.template.common.model"
                             targetProject="src/main/java">
             <!--  for MyBatis3/MyBatis3Simple
                自动为每一个生成的类创建一个构造方法，构造方法包含了所有的field；而不是使用setter；
             -->
-            <property name="constructorBased" value="false"/>
-            <property name="exampleMethodVisibility" value="false"/>
+            <!--<property name="constructorBased" value="false"/>-->
+            <!--<property name="exampleMethodVisibility" value="false"/>-->
         </javaModelGenerator>
         <!-- 生成的映射文件包名和位置 -->
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
@@ -93,28 +87,29 @@
         <javaClientGenerator targetPackage="site.yuyanjia.template.common.mapper"
                              targetProject="src/main/java" type="XMLMAPPER"/>
         <!-- 要生成的那些表 -->
-        <table schema="gongyanyong" tableName="sys_user" domainObjectName="sysUser">
-            <!-- generatedKey用于生成生成主键的方法，
-                   如果设置了该元素，MBG会在生成的<insert>元素中生成一条正确的<selectKey>元素，该元素可选
-                   column:主键的列名；
-                   sqlStatement：要生成的selectKey语句，有以下可选项：
-                       Cloudscape:相当于selectKey的SQL为： VALUES IDENTITY_VAL_LOCAL()
-                       DB2       :相当于selectKey的SQL为： VALUES IDENTITY_VAL_LOCAL()
-                       DB2_MF    :相当于selectKey的SQL为：SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1
-                       Derby      :相当于selectKey的SQL为：VALUES IDENTITY_VAL_LOCAL()
-                       HSQLDB      :相当于selectKey的SQL为：CALL IDENTITY()
-                       Informix  :相当于selectKey的SQL为：select dbinfo('sqlca.sqlerrd1') from systables where tabid=1
-                   MySql      :相当于selectKey的SQL为：SELECT LAST_INSERT_ID()
-                   SqlServer :相当于selectKey的SQL为：SELECT SCOPE_IDENTITY()
-                   SYBASE      :相当于selectKey的SQL为：SELECT @@IDENTITY
-                   JDBC      :相当于在生成的insert元素上添加useGeneratedKeys="true"和keyProperty属性-->
-            <!--mysql 配置-->
-            <!--<generatedKey column="uid" sqlStatement="Mysql" identity="true"/>-->
-            <!--<property name="rootClass" value="online.yuyanjia.template.mobile.model.base.BaseDO"/>-->
-        </table>
-        <table schema="gongyanyong" tableName="sys_role" domainObjectName="sysRole"/>
-        <table schema="gongyanyong" tableName="sys_permission" domainObjectName="sysPermission"/>
-        <table schema="gongyanyong" tableName="sys_role_permission" domainObjectName="sysRolePermission"/>
-        <table schema="gongyanyong" tableName="sys_user_role" domainObjectName="sysUserRole"/>
+        <!--<table schema="gongyanyong" tableName="sys_user" domainObjectName="sysUser">-->
+        <!--&lt;!&ndash; generatedKey用于生成生成主键的方法，-->
+        <!--如果设置了该元素，MBG会在生成的<insert>元素中生成一条正确的<selectKey>元素，该元素可选-->
+        <!--column:主键的列名；-->
+        <!--sqlStatement：要生成的selectKey语句，有以下可选项：-->
+        <!--Cloudscape:相当于selectKey的SQL为： VALUES IDENTITY_VAL_LOCAL()-->
+        <!--DB2       :相当于selectKey的SQL为： VALUES IDENTITY_VAL_LOCAL()-->
+        <!--DB2_MF    :相当于selectKey的SQL为：SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1-->
+        <!--Derby      :相当于selectKey的SQL为：VALUES IDENTITY_VAL_LOCAL()-->
+        <!--HSQLDB      :相当于selectKey的SQL为：CALL IDENTITY()-->
+        <!--Informix  :相当于selectKey的SQL为：select dbinfo('sqlca.sqlerrd1') from systables where tabid=1-->
+        <!--MySql      :相当于selectKey的SQL为：SELECT LAST_INSERT_ID()-->
+        <!--SqlServer :相当于selectKey的SQL为：SELECT SCOPE_IDENTITY()-->
+        <!--SYBASE      :相当于selectKey的SQL为：SELECT @@IDENTITY-->
+        <!--JDBC      :相当于在生成的insert元素上添加useGeneratedKeys="true"和keyProperty属性&ndash;&gt;-->
+        <!--&lt;!&ndash;mysql 配置&ndash;&gt;-->
+        <!--&lt;!&ndash;<generatedKey column="uid" sqlStatement="Mysql" identity="true"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="rootClass" value="online.yuyanjia.template.mobile.model.base.BaseDO"/>&ndash;&gt;-->
+        <!--</table>-->
+        <table schema="gongyanyong" tableName="web_permission" domainObjectName="WebPermission"/>
+        <table schema="gongyanyong" tableName="web_role" domainObjectName="WebRole"/>
+        <table schema="gongyanyong" tableName="web_role_permission" domainObjectName="WebRolePermission"/>
+        <table schema="gongyanyong" tableName="web_user" domainObjectName="WebUser"/>
+        <table schema="gongyanyong" tableName="web_user_role" domainObjectName="WebUserRole"/>
     </context>
 </generatorConfiguration>

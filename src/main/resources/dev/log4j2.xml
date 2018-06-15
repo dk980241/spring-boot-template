@@ -40,7 +40,7 @@
 
 
         <!--第三方日志配置-->
-        <logger name="org.springframework" level="warn"/>
+        <logger name="org.springframework" level="info"/>
         <logger name="org.quartz" level="warn"/>
         <logger name="org.mybatis" level="info"/>
         <logger name="org.apache" level="debug"/>
