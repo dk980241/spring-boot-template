@@ -10,4 +10,24 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
+
+    <sql id="colSql">
+        id,
+        username,
+        password,
+        salt,
+        is_locked,
+        gmt_create,
+        gmt_modified
+    </sql>
+
+    <select id="selectByUsername"
+            resultMap="BaseResultMap"
+            parameterType="java.lang.String"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_user
+        WHERE username = #{username}
+    </select>
 </mapper>

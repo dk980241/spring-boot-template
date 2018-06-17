@@ -9,4 +9,13 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
+
+    <sql id="colSql">
+        id,
+        permission_name,
+        permission_value,
+        is_available,
+        gmt_create,
+        gmt_modified
+    </sql>
 </mapper>

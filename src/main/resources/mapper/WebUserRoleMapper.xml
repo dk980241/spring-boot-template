@@ -8,4 +8,22 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
+
+    <sql id="colSql">
+      id,
+      user_id,
+      role_id,
+      gmt_create,
+      gmt_modified
+    </sql>
+
+    <select id="selectByUserId"
+            resultMap="BaseResultMap"
+            parameterType="java.lang.Long"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_user_role
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

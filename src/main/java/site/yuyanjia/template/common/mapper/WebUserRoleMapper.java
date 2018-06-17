@@ -5,6 +5,8 @@ import site.yuyanjia.template.common.config.MybatisRedisCache;
 import site.yuyanjia.template.common.model.WebUserRoleDO;
 import site.yuyanjia.template.common.util.BaseMapper;
 
+import java.util.List;
+
 /**
  * 用户角色mapper
  *
@@ -13,4 +15,12 @@ import site.yuyanjia.template.common.util.BaseMapper;
  */
 @CacheNamespace(implementation = MybatisRedisCache.class)
 public interface WebUserRoleMapper extends BaseMapper<WebUserRoleDO> {
+
+    /**
+     * 根据用户名查询
+     *
+     * @param userId
+     * @return
+     */
+    List<WebUserRoleDO> selectByUserId(Long userId);
 }

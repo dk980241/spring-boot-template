@@ -5,6 +5,8 @@ import site.yuyanjia.template.common.config.MybatisRedisCache;
 import site.yuyanjia.template.common.model.WebPermissionDO;
 import site.yuyanjia.template.common.util.BaseMapper;
 
+import java.util.List;
+
 /**
  * 权限mapper
  *
@@ -13,4 +15,5 @@ import site.yuyanjia.template.common.util.BaseMapper;
  */
 @CacheNamespace(implementation = MybatisRedisCache.class)
 public interface WebPermissionMapper extends BaseMapper<WebPermissionDO> {
+
 }
