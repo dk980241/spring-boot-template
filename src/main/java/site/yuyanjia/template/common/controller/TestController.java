@@ -20,7 +20,7 @@ public class TestController {
     private static Logger LOGGER = LogManager.getLogger(TestController.class);
 
     @RequestMapping("/log")
-    public void use_shiro_authen() {
+    public void useShiroAuthen() {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
             UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("1231231", "123456");

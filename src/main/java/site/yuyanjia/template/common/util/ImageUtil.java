@@ -1,6 +1,5 @@
 package site.yuyanjia.template.common.util;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
@@ -67,12 +66,9 @@ public class ImageUtil {
             file.getParentFile().mkdir();
         }
 
-        OutputStream outputStream = new FileOutputStream(absoluteFilePath);
-        try {
+        try (OutputStream outputStream = new FileOutputStream(absoluteFilePath)) {
             outputStream.write(bytes);
             outputStream.flush();
-        } finally {
-            IOUtils.closeQuietly(outputStream);
         }
         return relativeFilePath;
     }

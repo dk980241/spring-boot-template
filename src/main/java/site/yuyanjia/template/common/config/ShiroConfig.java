@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import site.yuyanjia.template.common.realm.WebUserRealm;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -149,10 +150,10 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public UserRealm userRealm() {
-        UserRealm userRealm = new UserRealm();
+    public WebUserRealm userRealm() {
+        WebUserRealm userRealm = new WebUserRealm();
         userRealm.setCredentialsMatcher(hashedCredentialsMatcher());
-        return new UserRealm();
+        return new WebUserRealm();
     }
 
 

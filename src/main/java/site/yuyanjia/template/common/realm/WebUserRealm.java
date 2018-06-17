@@ -1,4 +1,4 @@
-package site.yuyanjia.template.common.config;
+package site.yuyanjia.template.common.realm;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.*;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @author seer
  * @date 2018/2/1 16:59
  */
-public class UserRealm extends AuthorizingRealm {
+public class WebUserRealm extends AuthorizingRealm {
 
     @Autowired
     private WebUserMapper webUserMapper;
@@ -53,7 +53,6 @@ public class UserRealm extends AuthorizingRealm {
      * @return
      */
     @Override
-
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         String username = (String) principalCollection.getPrimaryPrincipal();
         WebUserDO webUserDO = webUserMapper.selectByUsername(username);
@@ -76,6 +75,9 @@ public class UserRealm extends AuthorizingRealm {
         webUserRoleDOList.forEach(
                 webUserRoleDO -> webRolePermissionDOList.addAll(webRolePermissionMapper.selectByRoleId(webUserRoleDO.getRoleId()))
         );
+        if (CollectionUtils.isEmpty(webRolePermissionDOList)) {
+            return authenticationInfo;
+        }
 
         List<String> permissonList = webRolePermissionDOList.stream()
                 .filter(distinctByKey(WebRolePermissionDO::getPermissionId))
