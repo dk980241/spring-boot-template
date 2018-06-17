@@ -1,4 +1,3 @@
-
 logging:
   config: classpath:dev/log4j2.xml
 spring:
@@ -56,11 +55,11 @@ spring:
   resources:
     static-locations: file:D://static/
 server:
-  port: 8200
+  port: 1314
   tomcat:
     uri-encoding: utf-8
   servlet:
-    context-path: /oilcoreserver
+    context-path: /template
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
