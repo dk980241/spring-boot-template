@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.yuyanjia.template.common.mapper.WebUserMapper">
+    <cache type="site.yuyanjia.template.common.config.MybatisRedisCache"/>
     <resultMap id="BaseResultMap" type="site.yuyanjia.template.common.model.WebUserDO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
         <result column="password" property="password"/>
         <result column="salt" property="salt"/>
-        <result column="is_locked" property="isLocked"/>
+        <result column="mobile" property="mobile"/>
+        <result column="real_name" property="realName"/>
+        <result column="is_locked" property="locked"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
@@ -16,10 +19,51 @@
         username,
         password,
         salt,
+        mobile,
+        real_name,
         is_locked,
         gmt_create,
         gmt_modified
     </sql>
+
+    <update id="updateMobileAndRealNameByPrimaryKey"
+            parameterType="site.yuyanjia.template.common.model.WebUserDO"
+            flushCache="true">
+        UPDATE web_user
+        <set>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+            <if test="realName != null">
+                real_name = #{realName},
+            </if>
+            gmt_modified = #{gmtModified}
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateLockedByPrimaryKey"
+            parameterType="site.yuyanjia.template.common.model.WebUserDO"
+            flushCache="true">
+        UPDATE web_user
+        <set>
+            is_locked = #{locked},
+            gmt_modified = #{gmtModified}
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updatePasswordByPrimaryKey"
+            parameterType="site.yuyanjia.template.common.model.WebUserDO"
+            flushCache="true">
+        UPDATE web_user
+        <set>
+            salt = #{salt},
+            password = #{password},
+            gmt_modified = #{gmtModified}
+        </set>
+        where id = #{id}
+    </update>
 
     <select id="selectByUsername"
             resultMap="BaseResultMap"
@@ -29,5 +73,38 @@
         <include refid="colSql"/>
         FROM web_user
         WHERE username = #{username}
+    </select>
+
+    <select id="selectByMobile"
+            resultMap="BaseResultMap"
+            parameterType="java.lang.String"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_user
+        WHERE mobile = #{mobile}
+    </select>
+
+
+    <select id="selectWithLike"
+            resultMap="BaseResultMap"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_user
+        <where>
+            <if test="mobile != null">
+                AND mobile = #{mobile}
+            </if>
+            <if test="locked != null">
+                AND is_locked = #{locked}
+            </if>
+            <if test="username != null">
+                AND username like concat(#{username},'%')
+            </if>
+            <if test="realName != null">
+                AND real_name like concat(#{realName},'%')
+            </if>
+        </where>
     </select>
 </mapper>

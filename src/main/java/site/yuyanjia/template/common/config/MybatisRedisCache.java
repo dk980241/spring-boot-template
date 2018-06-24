@@ -96,7 +96,6 @@ public class MybatisRedisCache implements Cache {
                 .count(Integer.MAX_VALUE)
                 .build());
         while (cursor.hasNext()) {
-            redisConnection.del(cursor.next());
             count.getAndIncrement();
         }
         try {

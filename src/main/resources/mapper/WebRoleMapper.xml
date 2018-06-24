@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.yuyanjia.template.common.mapper.WebRoleMapper">
+    <cache type="site.yuyanjia.template.common.config.MybatisRedisCache"/>
     <resultMap id="BaseResultMap" type="site.yuyanjia.template.common.model.WebRoleDO">
         <id column="id" property="id"/>
         <result column="role_name" property="roleName"/>
@@ -18,4 +19,29 @@
         gmt_create,
         gmt_modified
     </sql>
+
+    <update id="updateRoleNameAndRoleDescriptionByPrimaryKey"
+            parameterType="site.yuyanjia.template.common.model.WebRoleDO"
+            flushCache="true">
+        UPDATE web_role
+        <set>
+            <if test="roleName != null">
+                role_name = #{roleName},
+            </if>
+            <if test="roleDescription != null">
+                role_description = #{roleName},
+            </if>
+            gmt_modified = #{gmtModified}
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectByRoleName"
+            resultMap="BaseResultMap"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_role
+        WHERE role_name = #{roleName}
+    </select>
 </mapper>

@@ -1,4 +1,4 @@
-package site.yuyanjia.template.common.realm;
+package site.yuyanjia.template.website.realm;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.*;
@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 
 /**
  * 用户Realm
@@ -54,10 +55,9 @@ public class WebUserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        String username = (String) principalCollection.getPrimaryPrincipal();
-        WebUserDO webUserDO = webUserMapper.selectByUsername(username);
-        if (ObjectUtils.isEmpty(webUserDO)) {
-            throw new UnknownAccountException("用户 " + username + " 信息查询失败");
+        WebUserDO webUserDO = (WebUserDO) principalCollection.getPrimaryPrincipal();
+        if (ObjectUtils.isEmpty(webUserDO) || ObjectUtils.isEmpty(webUserDO.getId())) {
+            throw new AccountException("用户信息查询为空");
         }
 
         SimpleAuthorizationInfo authenticationInfo = new SimpleAuthorizationInfo();
@@ -108,13 +108,23 @@ public class WebUserRealm extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                webUserDO.getUsername(),
+                username,
                 webUserDO.getPassword(),
                 getName()
         );
         ByteSource salt = ByteSource.Util.bytes(webUserDO.getSalt());
         authenticationInfo.setCredentialsSalt(salt);
         return authenticationInfo;
+    }
+
+    /**
+     * 删除缓存
+     *
+     * @param principals
+     */
+    @Override
+    protected void doClearCache(PrincipalCollection principals) {
+        super.doClearCache(principals);
     }
 
     /**

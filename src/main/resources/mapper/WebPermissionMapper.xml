@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.yuyanjia.template.common.mapper.WebPermissionMapper">
+    <cache type="site.yuyanjia.template.common.config.MybatisRedisCache"/>
     <resultMap id="BaseResultMap" type="site.yuyanjia.template.common.model.WebPermissionDO">
         <id column="id" property="id"/>
         <result column="permission_name" property="permissionName"/>
@@ -18,4 +19,37 @@
         gmt_create,
         gmt_modified
     </sql>
+    <update id="updatePermissionNameAndPermissionValueByPrimaryKey"
+            parameterType="site.yuyanjia.template.common.model.WebPermissionDO"
+            flushCache="true">
+        UPDATE web_permission
+        <set>
+            <if test="permissionName != null">
+                permission_name = #{permissionName},
+            </if>
+            <if test="permissionValue != null">
+                permission_value = #{permissionValue},
+            </if>
+            gmt_modified = #{gmtModified}
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectByPermissonName"
+            resultMap="BaseResultMap"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_permission
+        WHERE permission_name = #{permissionName}
+    </select>
+
+    <select id="selectByPrimaryKey"
+            resultMap="BaseResultMap"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_permission
+        WHERE id = #{id}
+    </select>
 </mapper>

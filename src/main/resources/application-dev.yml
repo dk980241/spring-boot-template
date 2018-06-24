@@ -78,4 +78,13 @@ pagehelper:
   support-methods-arguments: true
   params: count=countsql
 yuyanjia:
-  cross-mapping: /website/**
+  cross:
+    mapping: /website/**
+  shiro:
+    hash-algorithm: MD5
+    hash-iterations: 2
+    authc-url-list:
+     - /website/admin/**
+     - /website/user/**
+    login-url: /website/user/user-login
+    logout-url: /website/user/user-logout

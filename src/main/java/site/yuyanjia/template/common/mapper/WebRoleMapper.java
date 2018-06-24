@@ -1,9 +1,7 @@
 package site.yuyanjia.template.common.mapper;
 
-import org.apache.ibatis.annotations.CacheNamespace;
-import site.yuyanjia.template.common.config.MybatisRedisCache;
+import org.apache.ibatis.annotations.Param;
 import site.yuyanjia.template.common.model.WebRoleDO;
-import site.yuyanjia.template.common.util.BaseMapper;
 
 /**
  * 角色mapper
@@ -11,6 +9,21 @@ import site.yuyanjia.template.common.util.BaseMapper;
  * @author seer
  * @date 2018/6/15 16:48
  */
-@CacheNamespace(implementation = MybatisRedisCache.class)
-public interface WebRoleMapper extends BaseMapper<WebRoleDO> {
+public interface WebRoleMapper {
+
+    /**
+     * 根据角色名查询
+     *
+     * @param roleName
+     * @return
+     */
+    WebRoleDO selectByRoleName(@Param("roleName") String roleName);
+
+    /**
+     * 更新角色名，描述
+     *
+     * @param webRoleDO
+     * @return
+     */
+    int updateRoleNameAndRoleDescriptionByPrimaryKey(WebRoleDO webRoleDO);
 }

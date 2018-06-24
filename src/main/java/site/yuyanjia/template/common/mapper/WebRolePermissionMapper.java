@@ -1,11 +1,10 @@
 package site.yuyanjia.template.common.mapper;
 
-import org.apache.ibatis.annotations.CacheNamespace;
-import site.yuyanjia.template.common.config.MybatisRedisCache;
+import org.apache.ibatis.annotations.Param;
 import site.yuyanjia.template.common.model.WebRolePermissionDO;
-import site.yuyanjia.template.common.util.BaseMapper;
 
 import java.util.List;
+
 
 /**
  * 角色权限mapper
@@ -13,8 +12,7 @@ import java.util.List;
  * @author seer
  * @date 2018/6/15
  */
-@CacheNamespace(implementation = MybatisRedisCache.class)
-public interface WebRolePermissionMapper extends BaseMapper<WebRolePermissionDO> {
+public interface WebRolePermissionMapper{
 
     /**
      * 根据角色id查询
@@ -23,4 +21,20 @@ public interface WebRolePermissionMapper extends BaseMapper<WebRolePermissionDO>
      * @return
      */
     List<WebRolePermissionDO> selectByRoleId(Long roleId);
+
+    /**
+     * 根据角色Id删除
+     *
+     * @param roleId
+     * @return
+     */
+    int deleteByRoleId(@Param("roleId") Long roleId);
+
+    /**
+     * 根据权限Id删除
+     *
+     * @param permissionId
+     * @return
+     */
+    int deleteByPermissionId(@Param("permissionId") Long permissionId);
 }

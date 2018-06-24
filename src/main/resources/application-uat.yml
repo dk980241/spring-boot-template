@@ -1,6 +1,6 @@
 
 logging:
-  config: classpath:dev/log4j2.xml
+  config: classpath:log4j2.xml
 spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
@@ -33,7 +33,7 @@ spring:
     database: 0
     host: 127.0.0.1
     port: 6379
-    password: admin
+    password:
     timeout: 2000
     lettuce:
       pool:
@@ -52,14 +52,17 @@ spring:
       enabled: true
   mvc:
     static-path-pattern: /static/**
-  resources:
-    static-locations: file:D://static/
+  http:
+    encoding:
+      force: true
+      enabled: true
+      charset: UTF-8
 server:
-  port: 8200
+  port: 1314
   tomcat:
-    uri-encoding: utf-8
+    uri-encoding: UTF-8
   servlet:
-    context-path: /oilcoreserver
+    context-path: /template
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
@@ -78,4 +81,12 @@ pagehelper:
   support-methods-arguments: true
   params: count=countsql
 yuyanjia:
-  cross-mapping: /website/**
+  cross:
+    mapping: /website/**
+  shiro:
+    hash-algorithm: MD5
+    hash-iterations: 2
+    authc-url-list:
+     - /website/user/**
+    login-url: /website/user/user-login
+    logout-url: /website/user/user-logout
