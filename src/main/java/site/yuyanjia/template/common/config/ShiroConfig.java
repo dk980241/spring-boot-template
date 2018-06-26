@@ -1,7 +1,6 @@
 package site.yuyanjia.template.common.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
@@ -12,6 +11,7 @@ import org.apache.shiro.session.SessionException;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
@@ -409,7 +409,7 @@ public class ShiroConfig {
      * <p>
      * shiro 默认 {@link org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter}
      * <p>
-     * 前后端分离项目，直接获取url进行匹配，后台配置的权限的值就是请求路径 {@link WebUserRealm#doGetAuthorizationInfo(AuthenticationToken)}
+     * 前后端分离项目，直接获取url进行匹配，后台配置的权限的值就是请求路径 {@link WebUserRealm#doGetAuthorizationInfo(PrincipalCollection)}
      *
      * @author seer
      * @date 2018/6/17 22:41

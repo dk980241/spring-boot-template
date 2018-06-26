@@ -7,6 +7,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import site.yuyanjia.template.common.mapper.WebPermissionMapper;
@@ -49,14 +50,23 @@ public class WebUserRealm extends AuthorizingRealm {
 
     /**
      * 获取授权信息
+     * <p>
+     * 权限的值是前端ajax请求的路径，角色的存在是为了方便给用户批量赋值权限的。
+     * 项目的最终实现是针对用户和权限的关系，不对角色作校验
      *
      * @param principalCollection
      * @return
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        WebUserDO webUserDO = (WebUserDO) principalCollection.getPrimaryPrincipal();
-        if (ObjectUtils.isEmpty(webUserDO) || ObjectUtils.isEmpty(webUserDO.getId())) {
+        /*
+        这个地方涉及到类加载的问题，看起来是同一个对象，但是不是同一个类加载器，强制类型转换会失败，所以只好使用拷贝了
+         */
+        Object obj = principalCollection.getPrimaryPrincipal();
+        WebUserDO webUserDO = new WebUserDO();
+        BeanUtils.copyProperties(obj, webUserDO);
+
+        if (ObjectUtils.isEmpty(obj) || ObjectUtils.isEmpty(webUserDO.getId())) {
             throw new AccountException("用户信息查询为空");
         }
 
@@ -94,6 +104,8 @@ public class WebUserRealm extends AuthorizingRealm {
 
     /**
      * 获取验证信息
+     * <p>
+     * 将用户实体作为principal方便后续直接使用
      *
      * @param authenticationToken
      * @return
