@@ -81,12 +81,11 @@ pagehelper:
   support-methods-arguments: true
   params: count=countsql
 yuyanjia:
-  cross:
-    mapping: /website/**
+  webmvc:
+    corss-mapping: /website/**
   shiro:
-    hash-algorithm: MD5
-    hash-iterations: 2
-    authc-url-list:
-     - /website/user/**
-    login-url: /website/user/user-login
-    logout-url: /website/user/user-logout
+    url-filter-list:
+      - /website/user/user-login=anon
+      - /website/user/user-logout=logout
+      - /website/user/**=authc,perms
+      - /**=anon

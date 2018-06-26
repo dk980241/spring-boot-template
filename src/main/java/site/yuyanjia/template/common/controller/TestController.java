@@ -11,6 +11,11 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 
 /**
  * @author seer
@@ -41,5 +46,13 @@ public class TestController {
         } else {
             LOGGER.error("已经通过身份验证了");
         }
+    }
+
+    public static void main(String[] args) {
+        String str = "2018-06-25 15:03:13";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(str, dateTimeFormatter);
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        System.out.println(date);
     }
 }
