@@ -31,6 +31,11 @@ public class DefinedWebMvcConfigurer implements WebMvcConfigurer {
      */
     private String corssMapping = "/**";
 
+    /**
+     * 全局跨域设置
+     *
+     * @param registry
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping(corssMapping)
@@ -40,6 +45,13 @@ public class DefinedWebMvcConfigurer implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
+    /**
+     * 消息转换器
+     * <p>
+     * {@link StringHttpMessageConverter} 默认编码是 ISO_8859_1 ，这里添加一个 UTF-8 编码的，解决 Controller 返回结果乱码问题
+     *
+     * @param converters
+     */
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));

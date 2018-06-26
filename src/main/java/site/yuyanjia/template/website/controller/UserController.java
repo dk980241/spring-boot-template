@@ -3,8 +3,6 @@ package site.yuyanjia.template.website.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,16 +51,6 @@ public class UserController {
         String responseStr = userService.userLogin(username, password);
         log.info("用户登录，返回数据 {}", responseStr);
         return responseStr;
-    }
-
-    /**
-     * 用户登出
-     *
-     * @return
-     */
-    @RequestMapping(value = "/user-logout", method = RequestMethod.POST)
-    public String userLogout() {
-        return "{\"response_code\":\"0000\",\"response_msg\":\"SUCCESS\"}";
     }
 
     /**

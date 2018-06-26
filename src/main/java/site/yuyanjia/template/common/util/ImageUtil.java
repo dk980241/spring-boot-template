@@ -24,11 +24,19 @@ public class ImageUtil {
     private static final String IMAGE_BASE64_DATA = "data";
 
     /**
+     * 静态资源目录前缀·
+     */
+    private static final String STATIC_LOCATION_PREFIX = "file:";
+
+    /**
      * 静态资源路径
      */
     private static String staticLocation;
 
     public static void setStaticLocation(String staticLocation) {
+        if (staticLocation.startsWith(ImageUtil.STATIC_LOCATION_PREFIX)) {
+            staticLocation = staticLocation.substring(ImageUtil.STATIC_LOCATION_PREFIX.length());
+        }
         ImageUtil.staticLocation = staticLocation;
     }
 
@@ -54,11 +62,15 @@ public class ImageUtil {
             }
         }
 
-        if (StringUtils.isNotEmpty(relativeDirectoryPath) && !relativeDirectoryPath.endsWith(File.separator)) {
-            relativeDirectoryPath += File.separator;
+        String relativeFilePath = prefixEnum.toString() + "-" + fileName + ".jpg";
+
+        if (StringUtils.isNotEmpty(relativeDirectoryPath)) {
+            if (!relativeDirectoryPath.endsWith(File.separator)) {
+                relativeDirectoryPath += File.separator;
+            }
+            relativeFilePath = relativeDirectoryPath + relativeFilePath;
         }
 
-        String relativeFilePath = relativeDirectoryPath + prefixEnum.toString() + "-" + fileName + ".jpg";
         String absoluteFilePath = staticLocation + relativeFilePath;
 
         File file = new File(absoluteFilePath);
@@ -77,15 +89,6 @@ public class ImageUtil {
      * 前缀枚举
      */
     public enum PrefixEnum {
-        /**
-         * 合作方证件
-         */
-        PARTNER_CERT,
-
-        /**
-         * 合作方机构证件
-         */
-        PARTNERORG_CERT
     }
 
 }

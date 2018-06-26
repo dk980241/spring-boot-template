@@ -108,7 +108,7 @@ public class WebUserRealm extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                username,
+                webUserDO,
                 webUserDO.getPassword(),
                 getName()
         );
