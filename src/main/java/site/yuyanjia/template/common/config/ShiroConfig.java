@@ -60,7 +60,7 @@ public class ShiroConfig {
     /**
      * Url和Filter匹配关系
      */
-    private List<String> urlFilterList;
+    private List<String> urlFilterList = new ArrayList<>();
 
     /**
      * 散列算法
@@ -173,6 +173,7 @@ public class ShiroConfig {
      */
     @Bean
     public CacheManager shiroRedisCacheManager(RedisTemplate redisTemplateWithJdk) {
+        // TODO seer 2018/6/28 17:07 缓存这里反序列化有点问题，需要重写一下
         return new CacheManager() {
             @Override
             public <K, V> Cache<K, V> getCache(String s) throws CacheException {
@@ -379,7 +380,6 @@ public class ShiroConfig {
             response.setContentType("text/plain");
 
             if (isLoginRequest(request, response)) {
-                return true;
             }
 
             Subject subject = getSubject(request, response);
