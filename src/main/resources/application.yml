@@ -1,3 +1,63 @@
 spring:
   profiles:
-    active: uat
+    active: dev
+
+logging:
+  config: classpath:log4j2.xml
+spring:
+  devtools:
+    restart:
+      additional-paths: src/main/java
+  mvc:
+    static-path-pattern: /static/**
+  http:
+    encoding:
+      force: true
+      enabled: true
+      charset: UTF-8
+server:
+  port: 1314
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /template
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    cache-enabled: true
+    map-underscore-to-camel-case: true
+    lazy-load-trigger-methods: equals,clone,hashCode,toString
+mapper:
+  not-empty: false
+  identity: MYSQL
+  mappers: site.yuyanjia.template.common.util.BaseMapper
+pagehelper:
+  helper-dialect: mysql
+  page-size-zero: true
+  reasonable: true
+  row-bounds-with-count: true
+  support-methods-arguments: true
+  params: count=countsql
+yuyanjia:
+  shiro:
+    url-filter-list:
+      - /website/user/user-login=anon
+      - /website/user/user-logout=logout
+      - /website/user/**=authc,perms
+      - /**=anon
+  filter:
+    cors:
+      allowed-origin-list:
+       - '*'
+      allowed-header-list:
+       - '*'
+      allowed-method-list:
+       - POST
+       - GET
+      exposed-header-list:
+       - access-control-allow-headers
+       - access-control-allow-methods
+       - access-control-allow-origin
+       - access-control-max-age
+       - X-Frame-Options
+      mapping: /website/**
