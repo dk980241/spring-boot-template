@@ -19,7 +19,7 @@ public class FastJsonUtil {
     private volatile static SerializeConfig serializeConfig;
 
     /**
-     * 发序列化配置
+     * 反序列化配置
      */
     private volatile static ParserConfig parserConfig;
 
@@ -39,7 +39,7 @@ public class FastJsonUtil {
     }
 
     /**
-     * 获取发序列化配置
+     * 获取反序列化配置
      *
      * @return
      */

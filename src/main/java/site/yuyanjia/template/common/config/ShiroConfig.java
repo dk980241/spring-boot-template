@@ -31,7 +31,9 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+import site.yuyanjia.template.common.contant.ResultEnum;
 import site.yuyanjia.template.website.realm.WebUserRealm;
+import site.yuyanjia.template.website.util.AjaxUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
@@ -386,7 +388,7 @@ public class ShiroConfig {
             if (subject.getPrincipal() != null) {
                 return true;
             }
-            response.getWriter().write("{\"response_code\":\"9000\",\"response_msg\":\"登录过期\"}");
+            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.用户登陆过期));
             return false;
         }
 
@@ -423,7 +425,7 @@ public class ShiroConfig {
             if (subject.isPermitted(url)) {
                 return true;
             }
-            response.getWriter().write("{\"response_code\":\"90001\",\"response_msg\":\"权限不足\"}");
+            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.权限不足));
             return false;
         }
 
@@ -443,7 +445,7 @@ public class ShiroConfig {
     class WebLogoutFilter extends LogoutFilter {
         @Override
         protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-            response.getWriter().write("{\"response_code\":\"0000\",\"response_msg\":\"SUCCES\"}");
+            response.getWriter().write(AjaxUtil.resultSuccess());
             Subject subject = getSubject(request, response);
 
             if (isPostOnlyLogout()) {
