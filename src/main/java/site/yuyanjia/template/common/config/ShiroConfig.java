@@ -379,7 +379,7 @@ public class ShiroConfig {
         @Override
         protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
             // 可能是我框架的问题，response不设置会造成乱码
-            response.setContentType("text/plain");
+            response.setContentType("application/json");
 
             if (isLoginRequest(request, response)) {
             }
@@ -388,7 +388,7 @@ public class ShiroConfig {
             if (subject.getPrincipal() != null) {
                 return true;
             }
-            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.用户登陆过期));
+            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.用户登陆过期).toJSONString());
             return false;
         }
 
@@ -425,7 +425,7 @@ public class ShiroConfig {
             if (subject.isPermitted(url)) {
                 return true;
             }
-            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.权限不足));
+            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.权限不足).toJSONString());
             return false;
         }
 
@@ -445,7 +445,8 @@ public class ShiroConfig {
     class WebLogoutFilter extends LogoutFilter {
         @Override
         protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-            response.getWriter().write(AjaxUtil.resultSuccess());
+            response.setContentType("application/json");
+            response.getWriter().write(AjaxUtil.resultSuccess().toJSONString());
             Subject subject = getSubject(request, response);
 
             if (isPostOnlyLogout()) {

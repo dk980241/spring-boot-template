@@ -1,8 +1,7 @@
 package site.yuyanjia.template.website.util;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.springframework.util.ObjectUtils;
 import site.yuyanjia.template.common.contant.ResponseEnum;
 import site.yuyanjia.template.common.contant.ResultEnum;
@@ -24,7 +23,7 @@ public class AjaxUtil {
      *
      * @return
      */
-    public static String resultSuccess() {
+    public static JSONObject resultSuccess() {
         return baseResponse(ResponseEnum.SUCCESS, ResultEnum.处理成功, null, 0);
     }
 
@@ -34,7 +33,7 @@ public class AjaxUtil {
      * @param data
      * @return
      */
-    public static String resultSuccess(Collection data, int count) {
+    public static JSONObject resultSuccess(Collection data, int count) {
         return baseResponse(ResponseEnum.SUCCESS, ResultEnum.处理成功, data, count);
     }
 
@@ -44,7 +43,7 @@ public class AjaxUtil {
      * @param ajaxResultEnum
      * @return
      */
-    public static String resultFailed(ResultEnum ajaxResultEnum) {
+    public static JSONObject resultFailed(ResultEnum ajaxResultEnum) {
         return baseResponse(ResponseEnum.SUCCESS, ajaxResultEnum, null, 0);
     }
 
@@ -55,7 +54,7 @@ public class AjaxUtil {
      * @param data
      * @return
      */
-    public static String resultFailed(ResultEnum ajaxResultEnum, Collection<Object> data, int count) {
+    public static JSONObject resultFailed(ResultEnum ajaxResultEnum, Collection<Object> data, int count) {
         return baseResponse(ResponseEnum.SUCCESS, ajaxResultEnum, data, count);
     }
 
@@ -64,7 +63,7 @@ public class AjaxUtil {
      *
      * @return
      */
-    public static String responseFailed() {
+    public static JSONObject responseFailed() {
         return baseResponse(ResponseEnum.FAILED, null, null, 0);
     }
 
@@ -77,7 +76,7 @@ public class AjaxUtil {
      * @param data
      * @return
      */
-    private static String baseResponse(ResponseEnum responseEnum, ResultEnum ajaxResultEnum, Collection<Object> data, int count) {
+    private static JSONObject baseResponse(ResponseEnum responseEnum, ResultEnum ajaxResultEnum, Collection<Object> data, int count) {
         AjaxBaseResponseDTO ajaxBaseResponseDTO = new AjaxBaseResponseDTO();
         ajaxBaseResponseDTO.setResponseCode(responseEnum.alias);
         ajaxBaseResponseDTO.setResponseMsg(responseEnum.toString());
@@ -93,7 +92,8 @@ public class AjaxUtil {
         ajaxBaseResponseDTO.setAmount(count);
 
         SerializeConfig serializeConfig = FastJsonUtil.getSerializeConfig();
-        return JSON.toJSONString(ajaxBaseResponseDTO, serializeConfig, SerializerFeature.WriteMapNullValue);
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(ajaxBaseResponseDTO, serializeConfig);
+        return jsonObject;
     }
 
     /**
@@ -105,7 +105,7 @@ public class AjaxUtil {
      * @param <T>
      * @return
      */
-    public static <T extends AjaxBaseResponseDTO> String extendResponse(ResponseEnum responseEnum, ResultEnum ajaxResultEnum, T t) {
+    public static <T extends AjaxBaseResponseDTO> JSONObject extendResponse(ResponseEnum responseEnum, ResultEnum ajaxResultEnum, T t) {
         t.setResponseCode(responseEnum.alias);
         t.setResponseMsg(responseEnum.toString());
 
@@ -115,7 +115,8 @@ public class AjaxUtil {
         }
 
         SerializeConfig serializeConfig = FastJsonUtil.getSerializeConfig();
-        return JSON.toJSONString(t, serializeConfig, SerializerFeature.WriteMapNullValue);
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(t, serializeConfig);
+        return jsonObject;
     }
 }
 

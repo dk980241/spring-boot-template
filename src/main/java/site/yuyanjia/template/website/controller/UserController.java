@@ -1,5 +1,6 @@
 package site.yuyanjia.template.website.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -49,14 +50,14 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/user-login", method = RequestMethod.POST)
-    public String userLogin(@RequestBody @Valid WebUserLoginRequestDTO userLoginRequestDTO, BindingResult bindingResult) {
+    public JSONObject userLogin(@RequestBody @Valid WebUserLoginRequestDTO userLoginRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errMsg = bindingResult.getFieldError().getDefaultMessage();
             log.error("用户登录，请求参数校验失败，{}，请求数据 {}", errMsg, userLoginRequestDTO);
             return AjaxUtil.resultFailed(ResultEnum.请求参数不完整);
         }
 
-        String responseStr = userService.userLogin(userLoginRequestDTO.getUsername(), userLoginRequestDTO.getPassword());
+        JSONObject responseStr = userService.userLogin(userLoginRequestDTO.getUsername(), userLoginRequestDTO.getPassword());
         log.info("用户登录，返回数据 {}", responseStr);
         return responseStr;
     }
@@ -69,13 +70,13 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/user-password-update", method = RequestMethod.POST)
-    public String userPasswordUpdate(@RequestBody @Valid WebUserPasswordUpdateRequestDTO userPasswordUpdateRequestDTO, BindingResult bindingResult) {
+    public JSONObject userPasswordUpdate(@RequestBody @Valid WebUserPasswordUpdateRequestDTO userPasswordUpdateRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errMsg = bindingResult.getFieldError().getDefaultMessage();
             log.error("用户密码修改，请求参数校验失败，{}，请求数据 {}", errMsg, userPasswordUpdateRequestDTO);
             return AjaxUtil.resultFailed(ResultEnum.请求参数不完整);
         }
-        String responseStr = userService.userPasswordUpdate(userPasswordUpdateRequestDTO.getOldPassword(), userPasswordUpdateRequestDTO.getNewPassword());
+        JSONObject responseStr = userService.userPasswordUpdate(userPasswordUpdateRequestDTO.getOldPassword(), userPasswordUpdateRequestDTO.getNewPassword());
         log.error("用户密码修改，返回数据 {}", responseStr);
         return responseStr;
     }

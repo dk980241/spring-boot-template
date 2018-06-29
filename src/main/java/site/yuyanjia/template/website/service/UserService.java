@@ -1,5 +1,7 @@
 package site.yuyanjia.template.website.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * UserService
  *
@@ -14,7 +16,7 @@ public interface UserService {
      * @param newPassword
      * @return
      */
-    String userPasswordUpdate(String oldPassword, String newPassword);
+    JSONObject userPasswordUpdate(String oldPassword, String newPassword);
 
     /**
      * 用户登录
@@ -23,5 +25,5 @@ public interface UserService {
      * @param password
      * @return
      */
-    String userLogin(String username, String password);
+    JSONObject userLogin(String username, String password);
 }
