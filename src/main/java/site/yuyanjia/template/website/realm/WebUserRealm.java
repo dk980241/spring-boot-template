@@ -6,10 +6,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import site.yuyanjia.template.common.config.SerializableSimpleByteSource;
 import site.yuyanjia.template.common.mapper.WebPermissionMapper;
 import site.yuyanjia.template.common.mapper.WebRolePermissionMapper;
 import site.yuyanjia.template.common.mapper.WebUserMapper;
@@ -124,8 +124,7 @@ public class WebUserRealm extends AuthorizingRealm {
                 webUserDO.getPassword(),
                 getName()
         );
-        ByteSource salt = ByteSource.Util.bytes(webUserDO.getSalt());
-        authenticationInfo.setCredentialsSalt(salt);
+        authenticationInfo.setCredentialsSalt(new SerializableSimpleByteSource(webUserDO.getSalt()));
         return authenticationInfo;
     }
 

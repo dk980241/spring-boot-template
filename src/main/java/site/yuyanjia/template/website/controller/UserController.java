@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import site.yuyanjia.template.website.dto.WebUserPasswordUpdateRequestDTO;
 import site.yuyanjia.template.website.service.UserService;
 import site.yuyanjia.template.website.util.AjaxUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -34,9 +36,11 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/user-test")
-    public String userTest() {
+    public String userTest(HttpServletRequest httpServletRequest) {
         Subject subject = SecurityUtils.getSubject();
-        WebUserDO webUserDO = (WebUserDO) subject.getPreviousPrincipals();
+        Object obj = subject.getPrincipal();
+        WebUserDO webUserDO = new WebUserDO();
+        BeanUtils.copyProperties(obj,webUserDO);
         log.warn("===== " + webUserDO.toString());
 
         return "success";

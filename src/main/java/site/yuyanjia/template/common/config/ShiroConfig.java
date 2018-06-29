@@ -175,7 +175,6 @@ public class ShiroConfig {
      */
     @Bean
     public CacheManager shiroRedisCacheManager(RedisTemplate redisTemplateWithJdk) {
-        // TODO seer 2018/6/28 17:07 缓存这里反序列化有点问题，需要重写一下
         return new CacheManager() {
             @Override
             public <K, V> Cache<K, V> getCache(String s) throws CacheException {
@@ -366,7 +365,6 @@ public class ShiroConfig {
         return SHIRO_REDIS_SESSION_KEY_PREFIX + "_" + key;
     }
 
-
     /**
      * 重写用户filter
      * <p>
@@ -382,6 +380,7 @@ public class ShiroConfig {
             response.setContentType("application/json");
 
             if (isLoginRequest(request, response)) {
+                return true;
             }
 
             Subject subject = getSubject(request, response);
@@ -393,7 +392,7 @@ public class ShiroConfig {
         }
 
         /**
-         * 不要做任何处理跳转，直接return，进行下一个filter
+         * 访问拒绝时，不错任何处理
          *
          * @param request
          * @param response
@@ -405,6 +404,7 @@ public class ShiroConfig {
             return false;
         }
     }
+
 
     /**
      * 重写权限filter
@@ -429,6 +429,14 @@ public class ShiroConfig {
             return false;
         }
 
+        /**
+         * 访问拒绝时不作任何处理
+         *
+         * @param request
+         * @param response
+         * @return
+         * @throws IOException
+         */
         @Override
         protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
             return false;

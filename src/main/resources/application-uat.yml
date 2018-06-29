@@ -25,8 +25,18 @@ spring:
       filters: stat,wall
       stat-view-servlet:
         url-pattern: /druid/*
-        login-username: admin
-        login-password: admin123
+        login-username: seer
+        login-password: yuyanjia
+      web-stat-filter:
+        enabled: true
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/website/user/user-logout'
+        session-stat-max-count: 1000
+        session-stat-enable: true
+        profile-enable: true
+        principal-session-name: USER_SESSION
+        url-pattern: /*
+        principal-cookie-name: USER_COOKIE
+      aop-patterns: site.yuyanjia.template.*,com.github.pagehelper.*
   redis:
     database: 0
     host: 127.0.0.1
