@@ -21,10 +21,7 @@ import site.yuyanjia.template.common.model.WebUserRoleDO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -59,8 +56,8 @@ public class WebUserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        /*
-        这个地方涉及到类加载的问题，看起来是同一个对象，但是不是同一个类加载器，强制类型转换会失败，所以只好使用拷贝了
+        /**
+         * 这个地方涉及到类加载的问题，看起来是同一个对象，但是不是同一个类加载器，强制类型转换会失败，所以只好使用拷贝了
          */
         Object obj = principalCollection.getPrimaryPrincipal();
         WebUserDO webUserDO = new WebUserDO();
@@ -76,11 +73,6 @@ public class WebUserRealm extends AuthorizingRealm {
             return authenticationInfo;
         }
 
-        List<String> roleList = webUserRoleDOList.stream()
-                .map(webUserRoleDO -> String.valueOf(webUserRoleDO.getRoleId()))
-                .collect(Collectors.toList());
-        authenticationInfo.addRoles(roleList);
-
         List<WebRolePermissionDO> webRolePermissionDOList = new ArrayList<>();
         webUserRoleDOList.forEach(
                 webUserRoleDO -> webRolePermissionDOList.addAll(webRolePermissionMapper.selectByRoleId(webUserRoleDO.getRoleId()))
@@ -89,16 +81,14 @@ public class WebUserRealm extends AuthorizingRealm {
             return authenticationInfo;
         }
 
-        List<String> permissonList = webRolePermissionDOList.stream()
-                .filter(distinctByKey(WebRolePermissionDO::getPermissionId))
-                .map(
-                        webRolePermissionDO ->
-                        {
-                            WebPermissionDO webPermissionDO = webPermissionMapper.selectByPrimaryKey(webRolePermissionDO.getPermissionId());
-                            return webPermissionDO.getPermissionValue();
-                        }
-                ).collect(Collectors.toList());
-        authenticationInfo.addStringPermissions(permissonList);
+        Set<String> permissonSet = webRolePermissionDOList.stream()
+                .map(webRolePermissionDO ->
+                {
+                    WebPermissionDO webPermissionDO = webPermissionMapper.selectByPrimaryKey(webRolePermissionDO.getPermissionId());
+                    return webPermissionDO.getPermissionValue();
+                })
+                .collect(Collectors.toSet());
+        authenticationInfo.addStringPermissions(permissonSet);
         return authenticationInfo;
     }
 
@@ -136,17 +126,5 @@ public class WebUserRealm extends AuthorizingRealm {
     @Override
     protected void doClearCache(PrincipalCollection principals) {
         super.doClearCache(principals);
-    }
-
-    /**
-     * 去重过滤器
-     *
-     * @param keyExtractor
-     * @param <T>
-     * @return
-     */
-    private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>(16);
-        return object -> seen.putIfAbsent(keyExtractor.apply(object), Boolean.TRUE) == null;
     }
 }

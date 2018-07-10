@@ -376,9 +376,7 @@ public class ShiroConfig {
     class WebUserFilter extends AccessControlFilter {
         @Override
         protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
-            // 可能是我框架的问题，response不设置会造成乱码
             response.setContentType("application/json");
-
             if (isLoginRequest(request, response)) {
                 return true;
             }

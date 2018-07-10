@@ -32,10 +32,13 @@ spring:
         login-password: yuyanjia
       web-stat-filter:
         enabled: true
-        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/website/user/user-logout'
         session-stat-max-count: 1000
         session-stat-enable: true
         profile-enable: true
+        principal-session-name: USER_SESSION
+        url-pattern: /*
+        principal-cookie-name: USER_COOKIE
       aop-patterns: site.yuyanjia.template.*,com.github.pagehelper.*
   redis:
     database: 0
