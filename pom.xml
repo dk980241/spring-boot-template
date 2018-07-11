@@ -123,7 +123,14 @@
     <build>
         <plugins>
 
-            <!--分离打包有个问题，shiro找不到项目的class-->
+            <!--分离打包有个问题，shiro找不到项目的class
+            shiro的sessionDAO使用了 redis的JdkSerializationRedisSerializer
+            JdkSerializationRedisSerializer 使用的jdk的java.net.URLClassLoader.findClass 加载类，
+            springboot类加载器和上边的类加载器不知道存在什么关系，导致加载不到class的全名加载不到，
+            将class带包拷贝到resources文件夹后就可以正常加载到。
+            思路1：搞清楚springboot的类加载，找找有什么解决的方法
+            思路2：使用其他的Serializer 代替
+            -->
             <!--打包jar-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
