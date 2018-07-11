@@ -4,12 +4,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import site.yuyanjia.template.common.config.SerializableSimpleByteSource;
+import site.yuyanjia.template.common.extend.shiro.ExtendAuthorizingRealm;
 import site.yuyanjia.template.common.mapper.WebPermissionMapper;
 import site.yuyanjia.template.common.mapper.WebRolePermissionMapper;
 import site.yuyanjia.template.common.mapper.WebUserMapper;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @author seer
  * @date 2018/2/1 16:59
  */
-public class WebUserRealm extends AuthorizingRealm {
+public class WebUserRealm extends ExtendAuthorizingRealm {
 
     @Autowired
     private WebUserMapper webUserMapper;
@@ -57,16 +57,21 @@ public class WebUserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         /**
-         * 这个地方涉及到类加载的问题，看起来是同一个对象，但是不是同一个类加载器，强制类型转换会失败，所以只好使用拷贝了
+         * 如果项目使用了 spring-boot-devtools 会导致类加载不同
+         * jar 使用 {@link sun.misc.Launcher.AppClassLoader}
+         * spring-boot-devtools 使用 {@link org.springframework.boot.devtools.restart.classloader.RestartClassLoader}
          */
         Object obj = principalCollection.getPrimaryPrincipal();
-        WebUserDO webUserDO = new WebUserDO();
-        BeanUtils.copyProperties(obj, webUserDO);
-
-        if (ObjectUtils.isEmpty(obj) || ObjectUtils.isEmpty(webUserDO.getId())) {
+        if (ObjectUtils.isEmpty(obj)) {
             throw new AccountException("用户信息查询为空");
         }
-
+        WebUserDO webUserDO;
+        if (obj.getClass().getClassLoader().equals(WebUserDO.class.getClassLoader())) {
+            webUserDO = (WebUserDO) obj;
+        }else{
+            webUserDO = new WebUserDO();
+            BeanUtils.copyProperties(obj, webUserDO);
+        }
         SimpleAuthorizationInfo authenticationInfo = new SimpleAuthorizationInfo();
         List<WebUserRoleDO> webUserRoleDOList = webUserRoleMapper.selectByUserId(webUserDO.getId());
         if (CollectionUtils.isEmpty(webUserRoleDOList)) {
