@@ -36,15 +36,20 @@
             <appender-ref ref="rootLog"/>
             <appender-ref ref="Console"/>
         </root>
-        <logger name="site.yuyanjia" level="all"/>
 
 
         <!--第三方日志配置-->
         <logger name="org.springframework" level="warn"/>
         <logger name="org.quartz" level="warn"/>
-        <logger name="org.mybatis" level="all"/>
-        <logger name="org.apache" level="debug"/>
+        <logger name="org.mybatis" level="warn"/>
+        <logger name="org.apache" level="warn"/>
         <logger name="org.apache.shiro" level="warn"/>
-        <logger name="com.github.pagehelper" level="all"/>
+        <logger name="com.github.pagehelper" level="warn"/>
+        <logger name="com.alibaba" level="warn"/>
+
+        <!--application-->
+        <logger name="site.yuyanjia" level="all"/>
+        <logger name="site.yuyanjia.template.common.config.MybatisRedisCache" level="warn"/>
+
     </loggers>
 </configuration>
