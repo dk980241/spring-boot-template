@@ -123,6 +123,7 @@
     <build>
         <plugins>
 
+            <!--分离打包有个问题，shiro找不到项目的class-->
             <!--打包jar-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -206,7 +207,10 @@
                             <artifactId>null</artifactId>
                         </include>
                     </includes>
-                    <layout>ZIP</layout>
+
+                    <!--JAR 对应 MANIFEST.MF#Main-Class: org.springframework.boot.loader.JarLauncher-->
+                    <!--ZIP 对应 MANIFEST.MF#Main-Class: org.springframework.boot.loader.PropertiesLauncher-->
+                    <layout>JAR</layout>
                     <!--使用外部配置文件，jar包里没有资源文件-->
                     <addResources>true</addResources>
                     <outputDirectory>${project.build.directory}</outputDirectory>
