@@ -108,7 +108,6 @@ public class RedisConfig extends CachingConfigurerSupport {
          * SpringBoot默认使用{@link org.springframework.boot.loader.LaunchedURLClassLoader}
          */
         ClassLoader classLoader = this.getClass().getClassLoader();
-        System.out.println(classLoader.getClass().getName());
         stringRedisTemplate.setValueSerializer(new JdkSerializationRedisSerializer(classLoader));
         stringRedisTemplate.afterPropertiesSet();
         return stringRedisTemplate;
