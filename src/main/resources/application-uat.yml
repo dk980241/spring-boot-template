@@ -60,6 +60,11 @@ server:
   port: 1314
   tomcat:
     uri-encoding: UTF-8
+    accesslog:
+      enabled: true
+    max-connections: 1000
+    max-threads: 500
+    max-http-post-size: 0
   servlet:
     context-path: /template
 mybatis:
