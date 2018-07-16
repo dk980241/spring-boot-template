@@ -107,3 +107,11 @@ yuyanjia:
        - access-control-max-age
        - X-Frame-Options
       mapping: /website/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
