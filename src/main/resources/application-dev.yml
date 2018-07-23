@@ -67,7 +67,7 @@ spring:
         charset: UTF-8
   pid:
     fail-on-write-error: true
-    file: d://application.pid
+    file: ./application.pid
 server:
   port: 1314
   tomcat:
