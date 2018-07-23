@@ -40,12 +40,17 @@
 
         <!--第三方日志配置-->
         <logger name="org.springframework" level="warn"/>
+        <logger name="org.springframework.boot.web" level="info"/>
+
         <logger name="org.quartz" level="warn"/>
+
         <logger name="org.mybatis" level="warn"/>
+
         <logger name="org.apache" level="warn"/>
-        <logger name="org.apache.shiro" level="warn"/>
-        <logger name="com.github.pagehelper" level="warn"/>
+        <logger name="org.apache.catalina" level="info"/>
+
         <logger name="com.alibaba" level="warn"/>
+
 
         <!--application-->
         <logger name="site.yuyanjia" level="all"/>
