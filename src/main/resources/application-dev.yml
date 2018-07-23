@@ -65,10 +65,18 @@ spring:
         force: true
         enabled: true
         charset: UTF-8
+  pid:
+    fail-on-write-error: true
+    file: d://application.pid
 server:
   port: 1314
   tomcat:
     uri-encoding: UTF-8
+    accesslog:
+      enabled: true
+    max-connections: 1000
+    max-threads: 500
+    max-http-post-size: 0
   servlet:
     context-path: /template
 mybatis:
@@ -111,3 +119,12 @@ yuyanjia:
        - access-control-max-age
        - X-Frame-Options
       mapping: /website/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
