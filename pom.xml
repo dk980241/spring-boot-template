@@ -23,6 +23,7 @@
         <java.version>1.8</java.version>
         <!--打包跳过测试-->
         <skipTests>true</skipTests>
+        <tomcat.version>9.0.7</tomcat.version>
     </properties>
 
     <dependencies>
