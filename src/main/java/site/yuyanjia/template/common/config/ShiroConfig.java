@@ -32,8 +32,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import site.yuyanjia.template.common.contant.ResultEnum;
+import site.yuyanjia.template.common.util.ResponseUtil;
 import site.yuyanjia.template.website.realm.WebUserRealm;
-import site.yuyanjia.template.website.util.AjaxUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
@@ -41,7 +41,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -385,7 +392,7 @@ public class ShiroConfig {
             if (subject.getPrincipal() != null) {
                 return true;
             }
-            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.用户登陆过期).toJSONString());
+            response.getWriter().write(ResponseUtil.resultFailed(ResultEnum.用户登陆过期));
             return false;
         }
 
@@ -423,7 +430,7 @@ public class ShiroConfig {
             if (subject.isPermitted(url)) {
                 return true;
             }
-            response.getWriter().write(AjaxUtil.resultFailed(ResultEnum.权限不足).toJSONString());
+            response.getWriter().write(ResponseUtil.resultFailed(ResultEnum.权限不足));
             return false;
         }
 
@@ -452,7 +459,7 @@ public class ShiroConfig {
         @Override
         protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
             response.setContentType("application/json");
-            response.getWriter().write(AjaxUtil.resultSuccess().toJSONString());
+            response.getWriter().write(ResponseUtil.resultSuccess());
             Subject subject = getSubject(request, response);
 
             if (isPostOnlyLogout()) {

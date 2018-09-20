@@ -16,7 +16,7 @@ public interface UserService {
      * @param newPassword
      * @return
      */
-    JSONObject userPasswordUpdate(String oldPassword, String newPassword);
+    Object userPasswordUpdate(String oldPassword, String newPassword);
 
     /**
      * 用户登录
@@ -25,5 +25,5 @@ public interface UserService {
      * @param password
      * @return
      */
-    JSONObject userLogin(String username, String password);
+    Object userLogin(String username, String password);
 }
