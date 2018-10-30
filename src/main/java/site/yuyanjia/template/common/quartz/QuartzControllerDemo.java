@@ -187,6 +187,17 @@ public class QuartzControllerDemo {
     }
 
     /**
+     * 删除任务
+     */
+    public void deleteJob() throws SchedulerException {
+        JobKey jobKey = null;
+        scheduler.deleteJob(jobKey);
+
+        TriggerKey triggerKey = null;
+        scheduler.unscheduleJob(triggerKey);
+    }
+
+    /**
      * 暂停任务
      */
     public void pauseJob() throws SchedulerException {
