@@ -42,7 +42,7 @@ spring:
       aop-patterns: site.yuyanjia.template.*,com.github.pagehelper.*
   redis:
     database: 0
-    host: 10.183.33.10
+    host: 127.0.0.1
     port: 6379
     password: admin
     timeout: 2000
@@ -68,20 +68,20 @@ spring:
   pid:
     fail-on-write-error: true
     file: ./application.pid
-  quartz:
-    job-store-type: jdbc
-    # 初始化表
-    jdbc:
-      initialize-schema: never
-    # quartz 属性配置
-    properties:
-      org:
-        quartz:
-          scheduler:
-            # 如果使用集群，实例名需相同
-            instanceName: QuartzScheduler
-            # 如果使用集群，id需相同
-            instanceId: CLUSTERED
+#  quartz:
+#    job-store-type: jdbc
+#    # 初始化表
+#    jdbc:
+#      initialize-schema: never
+#    # quartz 属性配置
+#    properties:
+#      org:
+#        quartz:
+#          scheduler:
+#            # 如果使用集群，实例名需相同
+#            instanceName: QuartzScheduler
+#            # 如果使用集群，id需相同
+#            instanceId: CLUSTERED
 server:
   port: 1314
   tomcat:

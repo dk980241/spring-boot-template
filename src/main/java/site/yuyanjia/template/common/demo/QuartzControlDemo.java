@@ -1,4 +1,4 @@
-package site.yuyanjia.template.common.quartz;
+package site.yuyanjia.template.common.demo;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 定时任务控制
+ * 定时任务控制demo
  *
  * @author seer
  * @date 2018/10/29 21:33
  */
-public class QuartzControllerDemo {
+public class QuartzControlDemo {
     @Autowired
     private Scheduler scheduler;
 
