@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
-<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
-<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
-<configuration status="WARN" monitorInterval="30">
+<!--
+status              log4j2自身日志输出等级
+monitorInterval     自动检测间隔 30s
+-->
+<configuration status="trace" monitorInterval="30">
     <properties>
         <!--日志目录-->
-        <property name="LOG_HOME">./logs/</property>
+        <property name="LOG_HOME">./logs</property>
+        <!--日志名称-->
+        <property name="LOG_NAME">template</property>
         <!--日志格式-->
         <property name="LOG_FORMAT">%d{yyyy-MM-dd HH:mm:ss,SSS}[%p][%t] %c[%L] %m %n</property>
         <!--备份目录- 根据年月建立文件夹 -->
@@ -15,46 +19,159 @@
     </properties>
 
     <appenders>
-        <!--这个输出控制台的配置-->
-        <console name="Console" target="SYSTEM_OUT">
+        <!--控制台日志-->
+        <console name="console" target="SYSTEM_OUT">
             <!--输出日志的格式-->
             <PatternLayout pattern="${LOG_FORMAT}"/>
         </console>
 
-        <!--filePattern 最后的时间格式决定了备份频率：每天 %d{yyyy-MM-dd}；每分钟 %d{yyyy-MM-dd-HH-mm}-->
-        <RollingFile name="rootLog" fileName="${LOG_HOME}/template.log"
-                     filePattern="${BACKUP_HOME}/oilCard.log_${BACK_Hz}.log">
+        <!--trace级别日志
+        日志文件    template_trace.log
+        备份文件    /backup/trace/template_trace_2018-11-08.log
+        备份频率    每天备份
+        日志等级    error,warn,info,debug,trace
+        -->
+        <!--
+        filePattern 最后的时间格式决定了备份频率：每天 %d{yyyy-MM-dd}；每分钟 %d{yyyy-MM-dd-HH-mm}
+        -->
+        <RollingFile name="traceLog" fileName="${LOG_HOME}/${LOG_NAME}_trace.log"
+                     filePattern="${BACKUP_HOME}/trace/${LOG_NAME}_trace.log_${BACK_Hz}.log">
+            <PatternLayout pattern="${LOG_FORMAT}"/>
+            <Policies>
+                <!--
+                备份策略
+                modulate true/false   以0点进行计算
+                interval             filePattern值的几倍
+                -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <!--超过7天的自动删除-->
+                <Delete basePath="${BACKUP_HOME}/trace/" maxDepth="1">
+                    <IfFileName glob="*${LOG_NAME}*.log"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter level="trace" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!--debug级别日志
+        日志文件    template_debug.log
+        备份文件    /backup/debug/template_debug_2018-11-08.log
+        备份频率    每天备份
+        日志等级    error,warn,info,debug
+        -->
+        <RollingFile name="debugLog" fileName="${LOG_HOME}/${LOG_NAME}_debug.log"
+                     filePattern="${BACKUP_HOME}/debug/${LOG_NAME}_debug.log_${BACK_Hz}.log">
             <PatternLayout pattern="${LOG_FORMAT}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${BACKUP_HOME}/trace/" maxDepth="1">
+                    <IfFileName glob="*${LOG_NAME}*.log"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <!--阀值过滤
+                onMatch     DENY/ACCEPT     是否接受匹配到的日志
+                onMismatch  DENY/NEUTRAL    是否接受未匹配的日志
+                -->
+                <!--随便提供一个高级别日志，用于允许打印高级日志-->
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!--info级别日志
+       日志文件    template_info.log
+       备份文件    /backup/info/template_info_2018-11-08.log
+       备份频率    每天备份
+       日志等级    error,warn,info
+       -->
+        <RollingFile name="infoLog" fileName="${LOG_HOME}/${LOG_NAME}_info.log"
+                     filePattern="${BACKUP_HOME}/info/${LOG_NAME}_info.log_${BACK_Hz}.log">
+            <PatternLayout pattern="${LOG_FORMAT}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${BACKUP_HOME}/trace/" maxDepth="1">
+                    <IfFileName glob="*${LOG_NAME}*.log"/>
+                    <IfLastModified age="180d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!--warn级别日志
+       日志文件    template_warn.log
+       备份文件    /backup/warn/template_warn_2018-11-08.log
+       备份频率    每天备份
+       日志等级    error,warn
+       -->
+        <RollingFile name="warnLog" fileName="${LOG_HOME}/${LOG_NAME}_warn.log"
+                     filePattern="${BACKUP_HOME}/warn/${LOG_NAME}_warn.log_${BACK_Hz}.log">
+            <PatternLayout pattern="${LOG_FORMAT}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${BACKUP_HOME}/trace/" maxDepth="1">
+                    <IfFileName glob="*${LOG_NAME}*.log"/>
+                    <IfLastModified age="360d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!--error级别日志
+       日志文件    template_error.log
+       备份文件    /backup/error/template_error_2018-11-08.log
+       备份频率    每天备份
+       日志等级    error
+       -->
+        <RollingFile name="errorLog" fileName="${LOG_HOME}/${LOG_NAME}_error.log"
+                     filePattern="${BACKUP_HOME}/error/${LOG_NAME}_error.log_${BACK_Hz}.log">
+            <PatternLayout pattern="${LOG_FORMAT}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
         </RollingFile>
     </appenders>
 
     <loggers>
-        <root level="info">
-            <appender-ref ref="rootLog"/>
-            <appender-ref ref="Console"/>
+        <!--根日志配置-->
+        <root level="all">
+            <appender-ref ref="console"/>
+            <appender-ref ref="traceLog"/>
+            <appender-ref ref="debugLog"/>
+            <appender-ref ref="infoLog"/>
+            <appender-ref ref="warnLog"/>
+            <appender-ref ref="errorLog"/>
         </root>
-
 
         <!--第三方日志配置-->
         <logger name="org.springframework" level="warn"/>
         <logger name="org.springframework.boot.web" level="info"/>
-
         <logger name="org.quartz" level="warn"/>
-
         <logger name="org.mybatis" level="warn"/>
-
         <logger name="org.apache" level="warn"/>
         <logger name="org.apache.catalina" level="all"/>
-
         <logger name="com.alibaba" level="warn"/>
-
-
-        <!--application-->
-        <logger name="site.yuyanjia" level="all"/>
-        <logger name="site.yuyanjia.template.common.config" level="warn"/>
 
     </loggers>
 </configuration>
