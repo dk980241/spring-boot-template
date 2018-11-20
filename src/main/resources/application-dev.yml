@@ -42,7 +42,7 @@ spring:
       aop-patterns: site.yuyanjia.template.*,com.github.pagehelper.*
   redis:
     database: 0
-    host: 127.0.0.1
+    host: 10.180.29.19
     port: 6379
     password: admin
     timeout: 2000
@@ -58,8 +58,10 @@ spring:
     password: admin
     pool:
       enabled: true
+  mvc:
+      static-path-pattern: /static/**
   resources:
-      static-locations: file:D://static/
+      static-locations: file:E://static/
   http:
       encoding:
         force: true
@@ -110,9 +112,9 @@ pagehelper:
 yuyanjia:
   shiro:
     url-filter-list:
-      - /website/user/user-login=anon
-      - /website/user/user-logout=logout
-      - /website/user/**=authc,perms
+#      - /website/user/user-login=anon
+#      - /website/user/user-logout=logout
+#      - /website/user/**=authc,perms
       - /**=anon
   filter:
     cors:
