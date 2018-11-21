@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.util.Assert;
+import site.yuyanjia.template.common.contant.RedisKeyContant;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -121,6 +122,8 @@ public class MybatisRedisCache implements Cache {
      * @return
      */
     private String generateKey(Object key) {
-        return this.getClass().getName() + "_" + id + "_" + key;
+        String keyStr = RedisKeyContant.MYBATIS_CACHE_PREFIX + id + ":" + key;
+        keyStr = keyStr.replaceAll("\\n", "").replaceAll(" ", "");
+        return keyStr;
     }
 }

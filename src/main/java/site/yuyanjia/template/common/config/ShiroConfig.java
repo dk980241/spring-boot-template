@@ -31,6 +31,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+import site.yuyanjia.template.common.contant.RedisKeyContant;
 import site.yuyanjia.template.common.contant.ResultEnum;
 import site.yuyanjia.template.common.util.ResponseUtil;
 import site.yuyanjia.template.website.realm.WebUserRealm;
@@ -80,16 +81,6 @@ public class ShiroConfig {
      * 散列迭代次数
      */
     private Integer hashIterations = 2;
-
-    /**
-     * 缓存 key 前缀
-     */
-    private static final String SHIRO_REDIS_CACHE_KEY_PREFIX = ShiroConfig.class.getName() + "_shiro.redis.cache_";
-
-    /**
-     * session key 前缀
-     */
-    private static final String SHIRO_REDIS_SESSION_KEY_PREFIX = ShiroConfig.class.getName() + "shiro.redis.session_";
 
     /**
      * Filter 工厂
@@ -359,7 +350,7 @@ public class ShiroConfig {
      * @return
      */
     private String generateCacheKey(String name, Object key) {
-        return SHIRO_REDIS_CACHE_KEY_PREFIX + name + "_" + key;
+        return RedisKeyContant.SHIRO_CACHE_PREFIX + name + ":" + key;
     }
 
     /**
@@ -369,7 +360,7 @@ public class ShiroConfig {
      * @return
      */
     private String generateSessionKey(Object key) {
-        return SHIRO_REDIS_SESSION_KEY_PREFIX + "_" + key;
+        return RedisKeyContant.SHIRO_SESSION_PREFIX + key;
     }
 
     /**
