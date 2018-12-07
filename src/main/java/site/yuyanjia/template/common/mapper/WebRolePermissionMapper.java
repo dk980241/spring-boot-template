@@ -12,7 +12,7 @@ import java.util.List;
  * @author seer
  * @date 2018/6/15
  */
-public interface WebRolePermissionMapper{
+public interface WebRolePermissionMapper {
 
     /**
      * 根据角色id查询
@@ -37,4 +37,12 @@ public interface WebRolePermissionMapper{
      * @return
      */
     int deleteByPermissionId(@Param("permissionId") Long permissionId);
+
+    /**
+     * 根据权限id查询
+     *
+     * @param permissionId
+     * @return
+     */
+    List<WebRolePermissionDO> selectByPermissionId(@Param("permissionId") Long permissionId);
 }

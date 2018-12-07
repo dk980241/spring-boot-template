@@ -20,12 +20,14 @@
 
     <delete id="deleteByRoleId"
             flushCache="true">
-        DELETE FROM web_role_permission WHERE role_id = #{roleId}
+        DELETE FROM web_role_permission
+        WHERE role_id = #{roleId}
     </delete>
 
     <delete id="deleteByPermissionId"
             flushCache="true">
-        DELETE FROM web_role_permission WHERE permission_id = #{permissionId}
+        DELETE FROM web_role_permission
+        WHERE permission_id = #{permissionId}
     </delete>
 
     <select id="selectByRoleId"
@@ -36,5 +38,14 @@
         <include refid="colSql"/>
         FROM web_role_permission
         WHERE role_id = #{roleId}
+    </select>
+
+    <select id="selectByPermissionId"
+            resultMap="BaseResultMap"
+            useCache="true">
+        SELECT
+        <include refid="colSql"/>
+        FROM web_role_permission
+        WHERE permission_id = #{permissionId}
     </select>
 </mapper>
