@@ -5,20 +5,22 @@ import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,6 +32,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import site.yuyanjia.template.common.security.WebUserDetail;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,6 +82,55 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService webUserDetailsService;
 
     /**
+     * 登录 URL
+     */
+    private static final String LOGIN_URL = "/website/user/user-login";
+
+    /**
+     * 登出 URL
+     */
+    private static final String LOGOUT_URL = "/website/user/user-logout";
+
+    /**
+     * 授权 URL
+     */
+    private static final String AUTH_URL = "/website/**";
+
+    /**
+     * 登录用户名
+     */
+    private static final String LOGIN_NAME = "username";
+
+    /**
+     * 登录密码
+     */
+    private static final String LOGIN_PWD = "password";
+
+    /**
+     * cors跨越
+     *
+     * @return
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setMaxAge(3600L);
+        corsConfiguration.addExposedHeader("access-control-allow-methods");
+        corsConfiguration.addExposedHeader("access-control-allow-headers");
+        corsConfiguration.addExposedHeader("access-control-allow-origin");
+        corsConfiguration.addExposedHeader("access-control-max-age");
+        corsConfiguration.addExposedHeader("X-Frame-Options");
+
+        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+        configurationSource.registerCorsConfiguration(AUTH_URL, corsConfiguration);
+        return configurationSource;
+    }
+
+    /**
      * http安全配置
      *
      * @param http
@@ -85,8 +139,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                // 跨域资源共享限制.无效
-                .cors().disable()
+                // 开启跨域共享
+                .cors().and()
                 // 跨域伪造请求限制.无效
                 .csrf().disable()
                 /*
@@ -94,159 +148,188 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 默认 权限不足  返回403，可以在这里自定义返回内容
                  */
                 .exceptionHandling().accessDeniedHandler((httpServletRequest, httpServletResponse, e) -> {
-            log.warn("权限不足");
+            log.info("权限不足 {}", e.getMessage());
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             httpServletResponse.getWriter().write(ROLE_LIMIT);
         })
                 .authenticationEntryPoint((httpServletRequest, httpServletResponse, e) -> {
-                    log.warn("登录过期");
+                    log.info("登录过期 {}", e.getMessage());
+                    httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
                     httpServletResponse.getWriter().write(LOGIN_EXPIRE);
                 }).and()
                 // 开启授权认证
                 .authorizeRequests()
                 // 这里可以用来设置权限验证处理
-                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-                    @Override
-                    public <O extends FilterSecurityInterceptor> O postProcess(O object) {
-
-                        /*
-                           设置权限原数据
-                           这里为，请求URL归属哪个角色，最终要用对角色做比较
-                         */
-                        object.setSecurityMetadataSource(new FilterInvocationSecurityMetadataSource() {
-                            @Override
-                            public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-                                String url = ((FilterInvocation) o).getRequestUrl();
-
-                                // TODO seer 2018/12/6 14:10 数据库中查询url对应的角色信息
-                                String[] roleIds = {"adm1in"};
-                                return SecurityConfig.createList(roleIds);
-                            }
-
-                            @Override
-                            public Collection<ConfigAttribute> getAllConfigAttributes() {
-                                return null;
-                            }
-
-                            @Override
-                            public boolean supports(Class<?> aClass) {
-                                return true;
-                            }
-                        });
-
-                        /*
-                        设置权限决策者
-                        是否有访问权限在这里确定的
-                         */
-                        object.setAccessDecisionManager(new AccessDecisionManager() {
-                            /**
-                             * 判定
-                             *
-                             * @param authentication 登录用户的信息
-                             * @param o
-                             * @param collection   请求地址拥有的角色集合
-                             * @throws AccessDeniedException
-                             * @throws InsufficientAuthenticationException
-                             */
-                            @Override
-                            public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
-                                Iterator<ConfigAttribute> iterator = collection.iterator();
-                                while (iterator.hasNext()) {
-                                    ConfigAttribute attribute = iterator.next();
-                                    Collection<? extends GrantedAuthority> authenticationAuthorities = authentication.getAuthorities();
-                                    for (GrantedAuthority authenticationAuthority : authenticationAuthorities) {
-                                        if (authenticationAuthority.getAuthority().equalsIgnoreCase(attribute.getAttribute())) {
-                                            return;
-                                        }
-                                    }
-                                }
-                                throw new AccessDeniedException("权限不足");
-                            }
-
-                            @Override
-                            public boolean supports(ConfigAttribute configAttribute) {
-                                return true;
-                            }
-
-                            @Override
-                            public boolean supports(Class<?> aClass) {
-                                return true;
-                            }
-                        });
-                        return object;
-                    }
+                .withObjectPostProcessor(new DefinedObjectPostProcessor())
+                // OPTIONS预检请求不处理
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                // 需要授权的URL
+                .antMatchers(AUTH_URL).authenticated()
+                // 其它请求随意访问
+                .anyRequest().permitAll()
+                .and()
+                .logout().logoutUrl(LOGOUT_URL).invalidateHttpSession(true).clearAuthentication(true)
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    log.info("用户注销成功 {}", null != authentication ? authentication.getName() : null);
+                    response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+                    response.getWriter().write(SUCCESS);
                 })
-                // 可以直接访问的url(不授权，不权限)
-                .antMatchers("/**", "/home").permitAll()
-                // 剩下的授权之后可以直接访问
-                .anyRequest().authenticated()
-                .and()
-                /*
-                设置form表单登录
-                必须先设置，后边会替换form表单登录的filter
-                 */
-                .formLogin()
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
                 .and()
                 // reqeust，session缓存，自行实现 org.springframework.security.web.savedrequest.RequestCache
-                .requestCache().requestCache(new HttpSessionRequestCache());
+                .requestCache().requestCache(new HttpSessionRequestCache())
+                .and()
+                // 实现 json 登录
+                .addFilter(getJsonFilter(super.authenticationManager()));
+    }
 
-        /*
-         * 实现json格式登录
-         */
-        AbstractAuthenticationProcessingFilter filter = new UsernamePasswordAuthenticationFilter() {
-            /**
-             *  获取json数据格式的用户名和密码
-             * @param request
-             * @param response
-             * @return
-             * @throws AuthenticationException
+    /**
+     * 权限处理
+     */
+    class DefinedObjectPostProcessor implements ObjectPostProcessor<FilterSecurityInterceptor> {
+        @Override
+        public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+
+            /*
+               设置权限原数据
+               这里为，请求URL归属哪个角色，最终要用对角色做比较
              */
-            @Override
-            public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-                if (MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(request.getContentType())
-                        || MediaType.APPLICATION_JSON_UTF8_VALUE.equalsIgnoreCase(request.getContentType())) {
-                    // 解析request内容
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    dbf.setExpandEntityReferences(false);
-                    StringBuffer sb = new StringBuffer();
-                    try (InputStream inputStream = request.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-                        String str;
-                        while ((str = bufferedReader.readLine()) != null) {
-                            sb.append(str);
-                        }
-                    } catch (IOException ex) {
-                        throw new RuntimeException("获取请求内容异常", ex);
-                    }
+            object.setSecurityMetadataSource(new FilterInvocationSecurityMetadataSource() {
+                @Override
+                public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
+                    String url = ((FilterInvocation) o).getRequestUrl();
 
-                    JSONObject jsonObject = JSON.parseObject(sb.toString());
-                    String username = jsonObject.getString("username");
-                    String password = jsonObject.getString("password");
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-                    return this.getAuthenticationManager().authenticate(authenticationToken);
-                } else {
-                    return super.attemptAuthentication(request, response);
+                    // TODO seer 2018/12/6 14:10 数据库中查询url对应的角色信息
+                    String[] roleIds = {"adm1in"};
+                    return SecurityConfig.createList(roleIds);
                 }
-            }
-        };
 
-        // 登录成功后 返回 {"result_code": "00000", "result_msg": "处理成功"}
-        filter.setAuthenticationSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> httpServletResponse.getWriter().write(SUCCESS));
-        //登录失败后 返回 {"result_code": "99999", "result_msg": "99999"}
+                @Override
+                public Collection<ConfigAttribute> getAllConfigAttributes() {
+                    return null;
+                }
+
+                @Override
+                public boolean supports(Class<?> aClass) {
+                    return true;
+                }
+            });
+
+            /*
+            设置权限决策者
+            是否有访问权限在这里确定的
+             */
+            object.setAccessDecisionManager(new AccessDecisionManager() {
+                /**
+                 * 判定
+                 *
+                 * @param authentication 登录用户的信息
+                 * @param o
+                 * @param collection   请求地址拥有的角色集合
+                 * @throws AccessDeniedException
+                 * @throws InsufficientAuthenticationException
+                 */
+                @Override
+                public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
+                    Iterator<ConfigAttribute> iterator = collection.iterator();
+                    while (iterator.hasNext()) {
+                        ConfigAttribute attribute = iterator.next();
+                        Collection<? extends GrantedAuthority> authenticationAuthorities = authentication.getAuthorities();
+                        for (GrantedAuthority authenticationAuthority : authenticationAuthorities) {
+                            if (authenticationAuthority.getAuthority().equalsIgnoreCase(attribute.getAttribute())) {
+                                return;
+                            }
+                        }
+                    }
+                    throw new AccessDeniedException("权限不足");
+                }
+
+                @Override
+                public boolean supports(ConfigAttribute configAttribute) {
+                    return true;
+                }
+
+                @Override
+                public boolean supports(Class<?> aClass) {
+                    return true;
+                }
+            });
+            return object;
+        }
+    }
+
+    /**
+     * 获取json授权filter
+     *
+     * @return
+     */
+    private AbstractAuthenticationProcessingFilter getJsonFilter(AuthenticationManager authenticationManager) {
+        AbstractAuthenticationProcessingFilter filter = new JsonAuthenticationFilter();
+
+        // 登录成功后
+        filter.setAuthenticationSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+            log.info("用户登录成功 {}", authentication.getName());
+            // 获取登录成功信息
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+            httpServletResponse.getWriter().write(SUCCESS);
+        });
+        //登录失败后
         filter.setAuthenticationFailureHandler((httpServletRequest, httpServletResponse, e) -> {
-            log.warn("用户登录失败", e);
+            log.info("用户登录失败 {}", e.getMessage());
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             httpServletResponse.getWriter().write(FAILED);
         });
         // 作用在登录的URL
-        filter.setFilterProcessesUrl("/login");
+        filter.setFilterProcessesUrl(LOGIN_URL);
         // 设置验证manager
-        filter.setAuthenticationManager(super.authenticationManagerBean());
-
-        // 替换默认的filter
-        http.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
     }
+
+    /**
+     * json 登录 filter
+     */
+    class JsonAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+        /**
+         * 获取json数据格式的用户名和密码
+         *
+         * @param request
+         * @param response
+         * @return
+         * @throws AuthenticationException
+         */
+        @Override
+        public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+            if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST.toString())) {
+                // 不支持的请求方式
+                throw new AuthenticationServiceException("不支持的请求方式: " + request.getMethod());
+            }
+            if (!MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(request.getContentType())
+                    && !MediaType.APPLICATION_JSON_UTF8_VALUE.equalsIgnoreCase(request.getContentType())) {
+                throw new AuthenticationServiceException("不支持的请求内容格式: " + request.getContentType());
+            }
+            // 解析request内容
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setExpandEntityReferences(false);
+            StringBuffer sb = new StringBuffer();
+            try (InputStream inputStream = request.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String str;
+                while ((str = bufferedReader.readLine()) != null) {
+                    sb.append(str);
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException("获取请求内容异常", ex);
+            }
+
+            JSONObject jsonObject = JSON.parseObject(sb.toString());
+            String username = jsonObject.getString(LOGIN_NAME);
+            String password = jsonObject.getString(LOGIN_PWD);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            return this.getAuthenticationManager().authenticate(authenticationToken);
+        }
+
+    }
+
 
     /**
      * 配置登录验证
