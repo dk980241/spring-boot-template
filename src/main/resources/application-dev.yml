@@ -1,29 +1,28 @@
-
 logging:
   config: classpath:log4j2.xml
 spring:
   datasource:
-    url: jdbc:mysql://10.183.33.10:3306/gongyanyong?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Hongkong
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: mobapp
-    password: mobapp123
-    type: com.alibaba.druid.pool.DruidDataSource
     druid:
+      name: dataSource
+      url: jdbc:mysql://10.183.33.10:3306/gongyanyong?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Hongkong
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: mobapp
+      password: mobapp123
       max-wait: 3000
       initial-size: 30
       max-active: 100
-#      关闭空闲连接检测间隔，ms
+      #      关闭空闲连接检测间隔，ms
       time-between-eviction-runs-millis: 60000
-#      连接最小生存时间
+      #      连接最小生存时间
       min-evictable-idle-time-millis: 300000
       validation-query: select 1 from dual
       test-while-idle: true
-#      申请连接时验证可用
+      #      申请连接时验证可用
       test-on-borrow: true
-#      归还连接时验证可用
+      #      归还连接时验证可用
       test-on-return: false
       connection-properties: ruid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-#      缓存PSCache，mysql关闭，oracle开启
+      #      缓存PSCache，mysql关闭，oracle开启
       pool-prepared-statements: false
       filters: stat,wall
       stat-view-servlet:
@@ -59,14 +58,14 @@ spring:
     pool:
       enabled: true
   mvc:
-      static-path-pattern: /static/**
+    static-path-pattern: /static/**
   resources:
-      static-locations: file:E://static/
+    static-locations: file:E://static/
   http:
-      encoding:
-        force: true
-        enabled: true
-        charset: UTF-8
+    encoding:
+      force: true
+      enabled: true
+      charset: UTF-8
   pid:
     fail-on-write-error: true
     file: ./application.pid
@@ -112,25 +111,25 @@ pagehelper:
 yuyanjia:
   shiro:
     url-filter-list:
-#      - /website/user/user-login=anon
-#      - /website/user/user-logout=logout
-#      - /website/user/**=authc,perms
+      #      - /website/user/user-login=anon
+      #      - /website/user/user-logout=logout
+      #      - /website/user/**=authc,perms
       - /**=anon
   filter:
     cors:
       allowed-origin-list:
-       - '*'
+        - '*'
       allowed-header-list:
-       - '*'
+        - '*'
       allowed-method-list:
-       - POST
-       - GET
+        - POST
+        - GET
       exposed-header-list:
-       - access-control-allow-headers
-       - access-control-allow-methods
-       - access-control-allow-origin
-       - access-control-max-age
-       - X-Frame-Options
+        - access-control-allow-headers
+        - access-control-allow-methods
+        - access-control-allow-origin
+        - access-control-max-age
+        - X-Frame-Options
       mapping: /website/**
   tomcat:
     connection-timeout: 10000
