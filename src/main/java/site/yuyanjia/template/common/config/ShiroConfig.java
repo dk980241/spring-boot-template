@@ -59,8 +59,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author seer
  * @date 2018/2/1 15:41
  */
-@Configuration
-@AutoConfigureAfter(RedisConfig.class)
+// @Configuration
+// @AutoConfigureAfter(RedisConfig.class)
 @ConfigurationProperties(prefix = ShiroConfig.PREFIX)
 @Slf4j
 public class ShiroConfig {

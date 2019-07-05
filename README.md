@@ -1,4 +1,8 @@
 
+> 文档很久木有更新了。。。。
+
+> 项目集成了很多框架的配置，有些框架存在冲突，会导致项目无法运行。
+
 ## dependency
 * druid
 * mybatis
@@ -25,3 +29,5 @@
 
 ## tool
 * [base64转图片](/src/main/java/site/yuyanjia/template/common/util/ImageUtil.java)
+
+ 

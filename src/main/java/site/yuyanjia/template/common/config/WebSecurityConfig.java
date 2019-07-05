@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDecisionManager;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -53,8 +55,8 @@ import java.util.Iterator;
  * @author seer
  * @date 2018/12/5 10:30
  */
-// @Configuration
-// @EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
 
@@ -94,7 +96,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 授权 URL
      */
-    private static final String AUTH_URL = "/website/**";
+    private static final String AUTH_URL = "/website/";
+
+    /**
+     * 授权 URL
+     */
+    private static final String AUTH_URL_REG = AUTH_URL + "**";
 
     /**
      * 登录用户名
@@ -159,14 +166,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 }).and()
                 // 开启授权认证
                 .authorizeRequests()
-                // 这里可以用来设置权限验证处理
-                .withObjectPostProcessor(new DefinedObjectPostProcessor())
+                // 需要授权访问的
+                .antMatchers(AUTH_URL_REG).authenticated()
                 // OPTIONS预检请求不处理
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                // 需要授权的URL
-                .antMatchers(AUTH_URL).authenticated()
-                // 其它请求随意访问
+                // 其他请求不处理
                 .anyRequest().permitAll()
+                // 这里可以用来设置权限验证处理，由于设置了这里，所以上述权限路径设置，实际不起作用。
+                .withObjectPostProcessor(new DefinedObjectPostProcessor())
                 .and()
                 .logout().logoutUrl(LOGOUT_URL).invalidateHttpSession(true).clearAuthentication(true)
                 .logoutSuccessHandler((request, response, authentication) -> {
@@ -188,7 +195,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     class DefinedObjectPostProcessor implements ObjectPostProcessor<FilterSecurityInterceptor> {
         @Override
         public <O extends FilterSecurityInterceptor> O postProcess(O object) {
-
             /*
                设置权限原数据
                这里为，请求URL归属哪个角色，最终要用对角色做比较
@@ -196,6 +202,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             object.setSecurityMetadataSource(new FilterInvocationSecurityMetadataSource() {
                 @Override
                 public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
+                    // TODO seer 2019/7/5 21:32 会对 EndPoints 的授权认证造成影响，处理一下
+                    String requestUrl = ((FilterInvocation) o).getRequestUrl();
+                    if (!requestUrl.startsWith(AUTH_URL)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[{}] permit all", requestUrl);
+                        }
+                        return null;
+                    }
                     String url = ((FilterInvocation) o).getRequestUrl();
 
                     // TODO seer 2018/12/6 14:10 数据库中查询url对应的角色信息
@@ -210,7 +224,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 @Override
                 public boolean supports(Class<?> aClass) {
-                    return true;
+                    return FilterInvocation.class.isAssignableFrom(aClass);
                 }
             });
 

@@ -69,20 +69,20 @@ spring:
   pid:
     fail-on-write-error: true
     file: ./application.pid
-#  quartz:
-#    job-store-type: jdbc
-#    # 初始化表
-#    jdbc:
-#      initialize-schema: never
-#    # quartz 属性配置
-#    properties:
-#      org:
-#        quartz:
-#          scheduler:
-#            # 如果使用集群，实例名需相同
-#            instanceName: QuartzScheduler
-#            # 如果使用集群，id需相同
-#            instanceId: CLUSTERED
+  #  quartz:
+  #    job-store-type: jdbc
+  #    # 初始化表
+  #    jdbc:
+  #      initialize-schema: never
+  #    # quartz 属性配置
+  #    properties:
+  #      org:
+  #        quartz:
+  #          scheduler:
+  #            # 如果使用集群，实例名需相同
+  #            instanceName: QuartzScheduler
+  #            # 如果使用集群，id需相同
+  #            instanceId: CLUSTERED
 server:
   port: 1314
   tomcat:
@@ -149,3 +149,5 @@ management:
   endpoint:
     health:
       show-details: always
+    shutdown:
+      enabled: true
