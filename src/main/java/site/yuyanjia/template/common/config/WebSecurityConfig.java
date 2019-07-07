@@ -104,6 +104,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String AUTH_URL_REG = AUTH_URL + "**";
 
     /**
+     * 监管 URL
+     */
+    private static final String MANAGEMENT_URL = "/actuator/";
+
+    /**
      * 登录用户名
      */
     private static final String LOGIN_NAME = "username";
@@ -133,7 +138,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.addExposedHeader("X-Frame-Options");
 
         UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
-        configurationSource.registerCorsConfiguration(AUTH_URL, corsConfiguration);
+        configurationSource.registerCorsConfiguration(AUTH_URL_REG, corsConfiguration);
         return configurationSource;
     }
 
@@ -202,7 +207,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             object.setSecurityMetadataSource(new FilterInvocationSecurityMetadataSource() {
                 @Override
                 public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-                    // TODO seer 2019/7/5 21:32 会对 EndPoints 的授权认证造成影响，处理一下
                     String requestUrl = ((FilterInvocation) o).getRequestUrl();
                     if (!requestUrl.startsWith(AUTH_URL)) {
                         if (log.isDebugEnabled()) {
@@ -210,10 +214,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         }
                         return null;
                     }
-                    String url = ((FilterInvocation) o).getRequestUrl();
 
                     // TODO seer 2018/12/6 14:10 数据库中查询url对应的角色信息
-                    String[] roleIds = {"adm1in"};
+                    String[] roleIds = {"admin"};
                     return SecurityConfig.createList(roleIds);
                 }
 
@@ -341,9 +344,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
             return this.getAuthenticationManager().authenticate(authenticationToken);
         }
-
     }
-
 
     /**
      * 配置登录验证
