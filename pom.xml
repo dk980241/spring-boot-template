@@ -126,10 +126,6 @@
             <!--依赖不会传递-->
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <finalName>spring-boot-template</finalName>
