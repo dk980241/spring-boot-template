@@ -77,7 +77,6 @@ public class AesUtil {
         return null == encrypt ? null : Base64.getEncoder().encodeToString(encrypt);
     }
 
-
     /**
      * 解密
      *
