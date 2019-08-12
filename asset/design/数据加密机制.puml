@@ -1,0 +1,86 @@
+@startuml
+ state pos {
+  data_plaintext: <font color=green><b>原始数据
+  data_plaintext_MD5: 生成原始数据信息摘要
+  AES_key: <font color=green><b>随机生成对称密钥
+  RSA_pub_key: <font color=red><b>预置的非对称公钥
+
+  data_ciphertext: 对原始数据进行对称加密
+  AES_key_ciphertext: 将AES密钥进行非对称加密
+
+  data_plaintext --> data_plaintext_MD5
+
+  data_plaintext --> data_ciphertext
+  AES_key --> data_ciphertext
+
+  RSA_pub_key --> AES_key_ciphertext
+  AES_key --> AES_key_ciphertext
+ }
+
+pos --> serve
+
+ state serve {
+    receive_MD5: <font color=blue><b>接收到信息摘要
+    receive_AES_key_ciphertext: <font color=blue><b>接收到的AES密钥密文
+    recevice_data_ciphertext: <font color=blue><b>接收到的数据密文
+
+
+    RSA_pri_key: <font color=red><b>预置的非对称私钥
+    AES_key_plaintext: 非对称解密AES明文
+    result_data_plaintext: 对称解密数据明文
+    result_data_plaintext_MD5: 计算MD5
+    result_data_verity: 数据签名验证
+
+    receive_AES_key_ciphertext --> AES_key_plaintext
+    RSA_pri_key --> AES_key_plaintext
+
+    AES_key_plaintext --> result_data_plaintext
+    recevice_data_ciphertext --> result_data_plaintext
+
+    result_data_plaintext --> result_data_plaintext_MD5
+
+    result_data_plaintext_MD5 --> result_data_verity
+    receive_MD5 --> result_data_verity
+ }
+
+ serve -right-> serve_response
+
+ state serve_response {
+    response_data_plaintext: <font color=purple><b>响应数据
+    response_data_plaintext_MD5: 响应数据摘要
+    response_AES_key: <font color=purple><b>随机生成对称密钥
+    response_AES_key_ciphertext: 使用请求的对称密钥进行对称加密
+    AES_key_plaintext_copy: <font color=green><b>请求报文中的密钥
+    response_data_ciphertext: 响应数据对称加密
+
+    response_data_plaintext -up-> response_data_plaintext_MD5
+    response_data_plaintext -up-> response_data_ciphertext
+    response_AES_key -up-> response_data_ciphertext
+
+    response_AES_key -up-> response_AES_key_ciphertext
+    AES_key_plaintext_copy -up-> response_AES_key_ciphertext
+ }
+
+ serve_response -up-> pos_response
+
+ state pos_response {
+    rec_MD5: <font color=brown><b>接收到的信息摘要
+    rec_AES_key_ciphertext: <font color=brown><b>接收到的AES密钥密文
+    rec_response_data_ciphertext: <font color=brown><b>接收到响应消息密文
+    AES_key_copy: <font color=green><b>请求时生成的对称密钥
+    rec_AES_key_plaintext: 对称解密AES密钥
+    rec_response_data_plaintext: 对称解密响应数据
+    rec_response_verify: 验证数字签名
+    rec_response_data_MD5: 生成信息摘要
+
+    rec_AES_key_ciphertext -up-> rec_AES_key_plaintext
+    AES_key_copy -up-> rec_AES_key_plaintext
+
+    rec_AES_key_plaintext -up-> rec_response_data_plaintext
+    rec_response_data_ciphertext -up-> rec_response_data_plaintext
+    rec_response_data_plaintext -up-> rec_response_data_MD5
+    rec_response_data_MD5 -up-> rec_response_verify
+    rec_MD5 -up-> rec_response_verify
+ }
+
+@enduml
