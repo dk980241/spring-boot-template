@@ -89,27 +89,4 @@ public class RedisConfig extends CachingConfigurerSupport {
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
-
-    /**
-     * redis模板
-     *
-     * @param redisConnectionFactory
-     * @return
-     */
-    @Bean
-    public RedisTemplate redisTemplateWithJdk(RedisConnectionFactory redisConnectionFactory) {
-        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate(redisConnectionFactory);
-        /**
-         * SpringBoot扩展了ClassLoader，进行分离打包的时候，使用到JdkSerializationRedisSerializer的地方
-         * 会因为ClassLoader的不同导致加载不到Class
-         * 指定使用项目的ClassLoader
-         *
-         * JdkSerializationRedisSerializer默认使用{@link sun.misc.Launcher.AppClassLoader}
-         * SpringBoot默认使用{@link org.springframework.boot.loader.LaunchedURLClassLoader}
-         */
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        stringRedisTemplate.setValueSerializer(new JdkSerializationRedisSerializer(classLoader));
-        stringRedisTemplate.afterPropertiesSet();
-        return stringRedisTemplate;
-    }
 }

@@ -20,13 +20,10 @@ import org.apache.shiro.web.filter.mgt.DefaultFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
@@ -94,8 +91,8 @@ public class ShiroConfig {
      * 权限Filter {@link WebPermissionsAuthorizationFilter}
      * 登出Filter {@link WebLogoutFilter}
      *
-     * @param securityManager
-     * @return
+     * @param securityManager securityManager
+     * @return object
      */
     @Bean
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
@@ -119,7 +116,7 @@ public class ShiroConfig {
      * 安全管理器
      *
      * @param userRealm                自定义 realm {@link #userRealm(CacheManager, HashedCredentialsMatcher)}
-     * @param shiroRedisSessionManager 自定义 session 管理器 {@link #shiroRedisSessionManager(RedisTemplate)}
+     * @param shiroRedisSessionManager 自定义 session 管理器 {@link #shiroRedisSessionManager(JdkRedisTemplate)}
      * @return @link org.apache.shiro.mgt.SecurityManager}
      */
     @Bean
@@ -134,7 +131,7 @@ public class ShiroConfig {
     /**
      * 凭证计算匹配
      *
-     * @return
+     * @return object
      */
     @Bean
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
@@ -151,7 +148,7 @@ public class ShiroConfig {
      * SQL已经实现缓存 {@link site.yuyanjia.template.common.mapper.WebUserMapper}
      * shiro默认缓存这里还有点坑需要填
      *
-     * @return
+     * @return object
      */
     @Bean
     public WebUserRealm userRealm(CacheManager shiroRedisCacheManager, HashedCredentialsMatcher hashedCredentialsMatcher) {
@@ -168,53 +165,68 @@ public class ShiroConfig {
     /**
      * 缓存管理器
      *
-     * @param redisTemplateWithJdk shiro的对象总是有这样那样的问题，所以 redisTemplate 使用 {@link org.springframework.data.redis.serializer.JdkSerializationRedisSerializer} 序列化值
-     * @return
+     * @param jdkRedisTemplate shiro的对象总是有这样那样的问题，所以 redisTemplate 使用 {@link org.springframework.data.redis.serializer.JdkSerializationRedisSerializer} 序列化值
+     * @return object
      */
     @Bean
-    public CacheManager shiroRedisCacheManager(RedisTemplate redisTemplateWithJdk) {
+    public CacheManager shiroRedisCacheManager(JdkRedisTemplate jdkRedisTemplate) {
         return new CacheManager() {
             @Override
             public <K, V> Cache<K, V> getCache(String s) throws CacheException {
-                log.trace("shiro redis cache manager get cache. name={} ", s);
+                if (log.isDebugEnabled()) {
+                    log.debug("shiro redis cache manager get cache. name={} ", s);
+                }
 
                 return new Cache<K, V>() {
                     @Override
                     public V get(K k) throws CacheException {
-                        log.trace("shiro redis cache get.{} K={}", s, k);
-                        return ((V) redisTemplateWithJdk.opsForValue().get(generateCacheKey(s, k)));
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis cache get.{} K={}", s, k);
+                        }
+                        return ((V) jdkRedisTemplate.opsForValue().get(generateCacheKey(s, k)));
                     }
 
+                    /**
+                     * put
+                     * 设置默认过期时间
+                     *
+                     * @param k k
+                     * @param v v
+                     * @return object
+                     * @throws CacheException cacheexception
+                     */
                     @Override
                     public V put(K k, V v) throws CacheException {
-                        log.trace("shiro redis cache put.{} K={} V={}", s, k, v);
-                        V result = (V) redisTemplateWithJdk.opsForValue().get(generateCacheKey(s, k));
+                        log.debug("shiro redis cache put.{} K={} V={}", s, k, v);
+                        V result = (V) jdkRedisTemplate.opsForValue().get(generateCacheKey(s, k));
 
-                        redisTemplateWithJdk.opsForValue().set(generateCacheKey(s, k), v);
+                        jdkRedisTemplate.opsForValue().set(generateCacheKey(s, k), v, 1800000, TimeUnit.MILLISECONDS);
                         return result;
                     }
 
                     @Override
                     public V remove(K k) throws CacheException {
-                        log.trace("shiro redis cache remove.{} K={}", s, k);
-                        V result = (V) redisTemplateWithJdk.opsForValue().get(generateCacheKey(s, k));
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis cache remove.{} K={}", s, k);
+                        }
+                        V result = (V) jdkRedisTemplate.opsForValue().get(generateCacheKey(s, k));
 
-                        redisTemplateWithJdk.delete(generateCacheKey(s, k));
+                        jdkRedisTemplate.delete(generateCacheKey(s, k));
                         return result;
                     }
 
                     /**
                      * clear
                      * <p>
-                     *     redis keys 命令会造成堵塞
-                     *     redis scan 命令不会造成堵塞
                      *
-                     * @throws CacheException
+                     * @throws CacheException cacheexception
                      */
                     @Override
                     public void clear() throws CacheException {
-                        log.trace("shiro redis cache clear.{}", s);
-                        RedisConnection redisConnection = redisTemplateWithJdk.getConnectionFactory().getConnection();
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis cache clear.{}", s);
+                        }
+                        RedisConnection redisConnection = jdkRedisTemplate.getConnectionFactory().getConnection();
                         Assert.notNull(redisConnection, "redisConnection is null");
                         try (Cursor<byte[]> cursor = redisConnection.scan(ScanOptions.scanOptions()
                                 .match(generateCacheKey(s, "*"))
@@ -230,9 +242,11 @@ public class ShiroConfig {
 
                     @Override
                     public int size() {
-                        log.trace("shiro redis cache size.{}", s);
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis cache size.{}", s);
+                        }
                         AtomicInteger count = new AtomicInteger(0);
-                        RedisConnection redisConnection = redisTemplateWithJdk.getConnectionFactory().getConnection();
+                        RedisConnection redisConnection = jdkRedisTemplate.getConnectionFactory().getConnection();
                         Assert.notNull(redisConnection, "redisConnection is null");
                         try (Cursor<byte[]> cursor = redisConnection.scan(ScanOptions.scanOptions()
                                 .match(generateCacheKey(s, "*"))
@@ -249,10 +263,12 @@ public class ShiroConfig {
 
                     @Override
                     public Set<K> keys() {
-                        log.trace("shiro redis cache keys.{}", s);
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis cache keys.{}", s);
+                        }
                         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
                         Set<K> keys = new HashSet<>();
-                        RedisConnection redisConnection = redisTemplateWithJdk.getConnectionFactory().getConnection();
+                        RedisConnection redisConnection = jdkRedisTemplate.getConnectionFactory().getConnection();
                         Assert.notNull(redisConnection, "redisConnection is null");
                         try (Cursor<byte[]> cursor = redisConnection.scan(ScanOptions.scanOptions()
                                 .match(generateCacheKey(s, "*"))
@@ -280,11 +296,11 @@ public class ShiroConfig {
     /**
      * session管理器
      *
-     * @param redisTemplateWithJdk shiro的对象总是有这样那样的问题，所以 redisTemplate 使用 {@link org.springframework.data.redis.serializer.JdkSerializationRedisSerializer} 序列化值
-     * @return
+     * @param jdkRedisTemplate shiro的对象总是有这样那样的问题，所以 redisTemplate 使用 {@link org.springframework.data.redis.serializer.JdkSerializationRedisSerializer} 序列化值
+     * @return object
      */
     @Bean
-    public DefaultWebSessionManager shiroRedisSessionManager(RedisTemplate redisTemplateWithJdk) {
+    public DefaultWebSessionManager shiroRedisSessionManager(JdkRedisTemplate jdkRedisTemplate) {
         DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
         defaultWebSessionManager.setGlobalSessionTimeout(1800000);
         defaultWebSessionManager.setSessionValidationInterval(900000);
@@ -294,41 +310,49 @@ public class ShiroConfig {
                     @Override
                     protected Serializable doCreate(Session session) {
                         Serializable sessionId = this.generateSessionId(session);
-                        log.trace("shiro redis session create. sessionId={}", sessionId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis session create. sessionId={}", sessionId);
+                        }
                         this.assignSessionId(session, sessionId);
-                        redisTemplateWithJdk.opsForValue().set(generateSessionKey(sessionId), session, session.getTimeout(), TimeUnit.MILLISECONDS);
+                        jdkRedisTemplate.opsForValue().set(generateSessionKey(sessionId), session, session.getTimeout(), TimeUnit.MILLISECONDS);
                         return sessionId;
                     }
 
                     @Override
                     protected Session doReadSession(Serializable sessionId) {
-                        log.trace("shiro redis session read. sessionId={}", sessionId);
-                        return (Session) redisTemplateWithJdk.opsForValue().get(generateSessionKey(sessionId));
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis session read. sessionId={}", sessionId);
+                        }
+                        return (Session) jdkRedisTemplate.opsForValue().get(generateSessionKey(sessionId));
                     }
 
                     @Override
                     public void update(Session session) throws UnknownSessionException {
-                        log.trace("shiro redis session update. sessionId={}", session.getId());
-                        redisTemplateWithJdk.opsForValue().set(generateSessionKey(session.getId()), session, session.getTimeout(), TimeUnit.MILLISECONDS);
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis session update. sessionId={}", session.getId());
+                        }
+                        jdkRedisTemplate.opsForValue().set(generateSessionKey(session.getId()), session, session.getTimeout(), TimeUnit.MILLISECONDS);
                     }
 
                     @Override
                     public void delete(Session session) {
-                        log.trace("shiro redis session delete. sessionId={}", session.getId());
-                        redisTemplateWithJdk.delete(generateSessionKey(session.getId()));
+                        if (log.isDebugEnabled()) {
+                            log.debug("shiro redis session delete. sessionId={}", session.getId());
+                        }
+                        jdkRedisTemplate.delete(generateSessionKey(session.getId()));
                     }
 
                     @Override
                     public Collection<Session> getActiveSessions() {
                         Set<Session> sessionSet = new HashSet<>();
-                        RedisConnection redisConnection = redisTemplateWithJdk.getConnectionFactory().getConnection();
+                        RedisConnection redisConnection = jdkRedisTemplate.getConnectionFactory().getConnection();
                         Assert.notNull(redisConnection, "redisConnection is null");
                         try (Cursor<byte[]> cursor = redisConnection.scan(ScanOptions.scanOptions()
                                 .match(generateSessionKey("*"))
                                 .count(Integer.MAX_VALUE)
                                 .build())) {
                             while (cursor.hasNext()) {
-                                Session session = (Session) redisTemplateWithJdk.opsForValue().get(cursor.next());
+                                Session session = (Session) jdkRedisTemplate.opsForValue().get(cursor.next());
                                 sessionSet.add(session);
                             }
                         } catch (IOException e) {
@@ -345,9 +369,9 @@ public class ShiroConfig {
     /**
      * 生成 缓存 key
      *
-     * @param name
-     * @param key
-     * @return
+     * @param name name
+     * @param key  key
+     * @return object
      */
     private String generateCacheKey(String name, Object key) {
         return RedisKeyContant.SHIRO_CACHE_PREFIX + name + ":" + key;
@@ -356,8 +380,8 @@ public class ShiroConfig {
     /**
      * 生成 session key
      *
-     * @param key
-     * @return
+     * @param key key
+     * @return object
      */
     private String generateSessionKey(Object key) {
         return RedisKeyContant.SHIRO_SESSION_PREFIX + key;
@@ -390,10 +414,10 @@ public class ShiroConfig {
         /**
          * 访问拒绝时，不错任何处理
          *
-         * @param request
-         * @param response
-         * @return
-         * @throws Exception
+         * @param request  request
+         * @param response response
+         * @return object
+         * @throws Exception exception
          */
         @Override
         protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -428,10 +452,10 @@ public class ShiroConfig {
         /**
          * 访问拒绝时不作任何处理
          *
-         * @param request
-         * @param response
-         * @return
-         * @throws IOException
+         * @param request  request
+         * @param response response
+         * @return object
+         * @throws IOException ioexception
          */
         @Override
         protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
@@ -461,7 +485,9 @@ public class ShiroConfig {
             try {
                 subject.logout();
             } catch (SessionException ise) {
-                log.trace("Encountered session exception during logout.  This can generally safely be ignored.", ise);
+                if (log.isDebugEnabled()) {
+                    log.debug("Encountered session exception during logout.  This can generally safely be ignored.", ise);
+                }
             }
             return false;
         }
